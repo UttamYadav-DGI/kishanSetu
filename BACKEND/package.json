@@ -5,10 +5,10 @@
   "license": "ISC",
   "author": "uttam yadav",
   "type": "module",
-  "main": "app.js",
+  "main": "src/app.js",
   "scripts": {
     "dev": "nodemon src/app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node src/app.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
