@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
-
+import api from "../../Services/Api";
 const EditCrop = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -21,8 +21,8 @@ const EditCrop = () => {
 
   const fetchCrop = async () => {
     try {
-      const res = await axios.get(
-        `http://localhost:5000/api/farmer/dashboard`,
+      const res = await api.get(
+        `/api/farmer/dashboard`,
         { withCredentials: true }
       );
 
@@ -49,8 +49,8 @@ const EditCrop = () => {
     setLoading(true);
 
     try {
-      await axios.put(
-        `http://localhost:5000/api/farmer/crop/${id}`,
+      await api.put(
+        `/api/farmer/crop/${id}`,
         formData,
         { withCredentials: true }
       );

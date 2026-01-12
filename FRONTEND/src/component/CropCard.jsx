@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
+import api from "../Services/Api";
 const CropCard = ({ crop, onRefresh }) => {
   const navigate = useNavigate();
 
@@ -8,8 +8,8 @@ const CropCard = ({ crop, onRefresh }) => {
     if (!window.confirm("Are you sure you want to delete this crop?")) return;
 
     try {
-      await axios.delete(
-        `http://localhost:5000/api/farmer/crop/${crop._id}`,
+      await api.delete(
+        `/api/farmer/crop/${crop._id}`,
         { withCredentials: true }
       );
       onRefresh(); // reload dashboard crops

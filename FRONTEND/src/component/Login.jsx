@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import api from "../Services/Api";
 export default function Login() {
   const navigate = useNavigate();
 
@@ -36,8 +36,8 @@ export default function Login() {
     try {
       setLoading(true);
 
-      const response = await axios.post(
-        "http://localhost:3000/api/v1/users/login",
+      const response = await api.post(
+        "/api/v1/users/login",
         formData,
         { withCredentials: true }
       );

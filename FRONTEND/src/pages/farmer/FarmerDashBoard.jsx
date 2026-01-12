@@ -3,7 +3,7 @@ import DashboardCard from "../../component/DashboardCard";
 import CropCard from "../../component/CropCard";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import api from "../../Services/Api";
 const FarmerDashboard = () => {
   const navigate = useNavigate();
   const [dashboard, setDashboard] = useState(null);
@@ -22,8 +22,8 @@ const FarmerDashboard = () => {
 
   const fetchDashboard = async () => {
     try {
-      const res = await axios.get(
-        "http://localhost:3000/api/v1/farmers/dashboard",
+      const res = await api.get(
+        "/api/v1/farmers/dashboard",
         { withCredentials: true }
       );
       setDashboard(res.data.data);

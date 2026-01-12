@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import api from "../../Services/Api";
 
 const FarmerProfile = () => {
   const navigate = useNavigate();
@@ -22,8 +23,8 @@ const FarmerProfile = () => {
 
   const fetchProfile = async () => {
     try {
-      const res = await axios.get(
-        "http://localhost:3000/api/v1/farmers/dashboard",
+      const res = await api.get(
+        "/api/v1/farmers/dashboard",
         { withCredentials: true }
       );
 
@@ -51,8 +52,8 @@ const FarmerProfile = () => {
     setMessage("");
 
     try {
-      await axios.post(
-        "http://localhost:3000/api/v1/farmers/profile",
+      await api.post(
+        "/api/v1/farmers/profile",
         {
           ...formData,
           CropGrown: formData.CropGrown

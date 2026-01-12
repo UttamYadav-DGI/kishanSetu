@@ -1,6 +1,6 @@
 // ChatBot.jsx
 import React, { useState, useEffect, useRef } from "react";
-
+import api from "../Services/Api";
 const ChatBot = ({ chatLang }) => {
   const [messages, setMessages] = useState([
     { from: "bot", text: "👋 Hi! I’m Lencho, your farm assistant. How can I help you today?" }
@@ -24,21 +24,32 @@ const ChatBot = ({ chatLang }) => {
     setInput("");
 
     // Call your backend chatbot API here
-    try {
-      const res = await fetch("https://kishansetu-2.onrender.com/api/v1/users/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: input, language: {chatLang} })
-      });
-      const data = await res.json();
-      console.log("data is",data)
-      const botReply = data.reply || "Sorry, I didn’t get that.";
-
-      // Add bot reply
-      setMessages(prev => [...prev, { from: "bot", text: botReply }]);
-    } catch (error) {
-      setMessages(prev => [...prev, { from: "bot", text: "⚠️ Error: Unable to fetch reply." }]);
+   try {
+  const res = await api.post(
+    "/api/v1/users/chat",
+    {
+      message: input,
+      language: chatLang
+    },
+    {
+      headers: { "Content-Type": "application/json" }
     }
+  );
+
+  const data = res.data;
+  console.log("data is", data);
+
+  const botReply = data.reply || "Sorry, I didn’t get that.";
+
+  setMessages(prev => [...prev, { from: "bot", text: botReply }]);
+
+} catch (error) {
+  setMessages(prev => [
+    ...prev,
+    { from: "bot", text: "Error: Unable to fetch reply." }
+  ]);
+}
+
   };
 
   return (

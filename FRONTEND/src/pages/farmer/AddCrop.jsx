@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import api from "../../Services/Api";
 const AddCrop = () => {
   const navigate = useNavigate();
 
@@ -26,8 +26,8 @@ const AddCrop = () => {
     setMessage("");
 
     try {
-      await axios.post(
-        "http://localhost:3000/api/farmer/crop",
+      await api.post(
+        "/api/farmer/crop",
         formData,
         { withCredentials: true }
       );
