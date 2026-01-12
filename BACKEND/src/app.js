@@ -1,50 +1,40 @@
-import express from 'express'
-import connectDB from './DB/db.js';
-import dotenv from 'dotenv'
-import cors from 'cors'
+import express from "express";
+import connectDB from "./DB/db.js";
+import dotenv from "dotenv";
+import cors from "cors";
 import cookieParser from "cookie-parser";
-dotenv.config({ path: './env' });
-  
 
-const app=express();
+dotenv.config();
 
-app.use(express.json({limit:"16kb"}))
-app.use(express.urlencoded({extended:true,limit:"16kb"}))
-app.use(express.static("public"))
-app.use(cookieParser())
+const app = express();
+
+app.use(express.json({ limit: "16kb" }));
+app.use(express.urlencoded({ extended: true, limit: "16kb" }));
+app.use(cookieParser());
+
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: process.env.CORS_ORIGIN,
     credentials: true
   })
 );
 
+import userRouter from "./Routers/User.routes.js";
+import farmerRouter from "./Routers/farmer.routes.js";
+import cropRouter from "./Routers/crop.routes.js";
 
+app.use("/api/v1/users", userRouter);
+app.use("/api/v1/farmers", farmerRouter);
+app.use("/api/v1/crops", cropRouter);
 
+const PORT = process.env.PORT || 3000;
 
-
-
-import userRouter from './Routers/User.routes.js';
-import farmerRouter from './Routers/farmer.routes.js';
-import cropRouter from './Routers/crop.routes.js';
-app.use("/api/v1/users",userRouter)
-app.use("/api/v1/farmers",farmerRouter)
-app.use("/api/v1/crops",cropRouter)
-
-
-
-
-
-
-
-// server connection after db connected successfully
 connectDB()
-.then(()=>{
-    app.listen((process.env.PORT || 3000),()=>{
-        console.log(`server is running at port ${process.env.PORT}`);
-    })
-})
-.catch((error)=>{
-    console.log("something went wrong while server is connected",error);
-})
-
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error("Database connection failed", error);
+  });
