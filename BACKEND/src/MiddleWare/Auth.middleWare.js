@@ -5,10 +5,10 @@ import { ApiError } from "../Utils/ApiError.js";
 
 export const verifyJWT = AsyncHandler(async (req, res, next) => {
 const token =
-  req.cookies?.accessToken ||
+  req.cookies?.accessToken || req.cookies?.AccessToken || 
   req.header("Authorization")?.split(" ")[1];
 
-//     console.log("COOKIES 👉", req.cookies);
+    console.log("COOKIES 👉", req.cookies);
 // console.log("AUTH HEADER 👉", req.headers.authorization);
 // console.log("ALL HEADERS 👉", req.headers);
 
