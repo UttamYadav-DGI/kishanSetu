@@ -25,8 +25,11 @@ app.use(
 
 
 import userRouter from './Routers/User.routes.js';
-
+import farmerRouter from './Routers/farmer.routes.js';
+import cropRouter from './Routers/crop.routes.js';
 app.use("/api/v1/users",userRouter)
+app.use("/api/v1/farmers",farmerRouter)
+app.use("/api/v1/crops",cropRouter)
 
 
 

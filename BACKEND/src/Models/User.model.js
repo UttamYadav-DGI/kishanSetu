@@ -30,6 +30,13 @@ const UserSchema=new mongoose.Schema({
         },
         RefreshToken:{
             type:String,
+        },
+        Role:{
+            type:String,
+            enum:["farmer" | "buyer"],
+            required:true,
+            default:"farmer",
+
         }
 }, {timestamps:true})
 
