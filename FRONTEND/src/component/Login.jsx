@@ -46,7 +46,7 @@ export default function Login() {
       console.log("User Data:", response.data);
 
       // Optional redirect after login
-      setTimeout(() => navigate("/dashboard"), 1000);
+      setTimeout(() => navigate("/farmers/dashboard"), 1000);
 
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
