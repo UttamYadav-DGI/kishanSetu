@@ -32,7 +32,7 @@ const FarmerProfile = () => {
 
       // If profile exists → redirect to dashboard
       if (profile) {
-        navigate("/farmer/dashboard");
+        navigate("/farmers/dashboard");
       }
     } catch (error) {
       console.log("Profile not found, continue onboarding");
