@@ -26,8 +26,8 @@ export default function App() {
       <Route path="/farmers/dashboard" element={<FarmerDashboard/>}></Route>
       <Route path="/farmers/profile" element={<FarmerProfile/>}></Route>
 
-      <Route path="/farmer/edit-crop/:id" element={<EditCrop/>} ></Route>
-      <Route path="/farmer/add-crop/:id" element={<AddCrop/>} ></Route>
+      <Route path="/farmer/edit-crop" element={<EditCrop/>} ></Route>
+      <Route path="/farmer/add-crop" element={<AddCrop/>} ></Route>
       <Route path="/login" element={<Login />}></Route>
       <Route path="/contact" element={<Contact />}></Route>
       <Route path="/services" element={<Services />}></Route>

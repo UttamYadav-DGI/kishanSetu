@@ -64,7 +64,7 @@ const FarmerDashboard = () => {
             className="w-12 h-12 rounded-full border"
           />
           <button
-            onClick={() => navigate("/farmers/add-crop/:id")}
+            onClick={() => navigate("/farmers/add-crop")}
             className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
           >
             + Add Crop

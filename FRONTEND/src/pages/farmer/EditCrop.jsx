@@ -50,7 +50,7 @@ const EditCrop = () => {
 
     try {
       await api.put(
-        `/api/farmer/crop/${id}`,
+        `/api/farmer/edit-crop`,
         formData,
         { withCredentials: true }
       );
