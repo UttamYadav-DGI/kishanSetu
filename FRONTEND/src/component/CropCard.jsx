@@ -9,7 +9,7 @@ const CropCard = ({ crop, onRefresh }) => {
 
     try {
       await api.delete(
-        `/api/farmer/crop/${crop._id}`,
+        `/api/crops/crops/${crop._id}`,
         { withCredentials: true }
       );
       onRefresh(); // reload dashboard crops
@@ -27,7 +27,7 @@ const CropCard = ({ crop, onRefresh }) => {
 
       <div className="flex gap-2 mt-3">
         <button
-          onClick={() => navigate(`/farmer/edit-crop/${crop._id}`)}
+          onClick={() => navigate(`/farmers/edit-crop`)}
           className="bg-blue-500 text-white px-3 py-1 rounded"
         >
           Edit
