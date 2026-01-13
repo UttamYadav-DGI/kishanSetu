@@ -27,7 +27,7 @@ const AddCrop = () => {
 
     try {
       await api.post(
-        "/api/farmer/add-crop",
+        "/api/v1/farmers/crops",
         formData,
         { withCredentials: true }
       );

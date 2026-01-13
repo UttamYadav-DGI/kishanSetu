@@ -22,7 +22,7 @@ const EditCrop = () => {
   const fetchCrop = async () => {
     try {
       const res = await api.get(
-        `/api/farmer/dashboard`,
+        `/api/v1/farmers/dashboard`,
         { withCredentials: true }
       );
 
@@ -49,8 +49,8 @@ const EditCrop = () => {
     setLoading(true);
 
     try {
-      await api.put(
-        `/api/farmer/edit-crop`,
+      await api.get(
+        `/api/v1/farmers/crops`,
         formData,
         { withCredentials: true }
       );
