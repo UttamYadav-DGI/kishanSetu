@@ -34,7 +34,7 @@ const AddCrop = () => {
 
       setMessage("✅ Crop added successfully");
       setTimeout(() => {
-        navigate("/farmer/dashboard");
+        navigate("/farmers/dashboard");
       }, 1000);
 
     } catch (error) {
