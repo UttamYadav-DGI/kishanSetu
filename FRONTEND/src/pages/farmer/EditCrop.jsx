@@ -54,7 +54,7 @@ const EditCrop = () => {
         formData,
         { withCredentials: true }
       );
-      navigate("/farmer/dashboard");
+      navigate("/farmers/dashboard");
     } catch (error) {
       alert("Failed to update crop");
     } finally {

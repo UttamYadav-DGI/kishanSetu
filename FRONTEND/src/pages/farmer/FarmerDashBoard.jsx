@@ -125,7 +125,7 @@ const FarmerDashboard = () => {
               key={crop._id}
               crop={crop}
               onEdit={() =>
-                navigate(`/farmers/edit-crop/${crop._id}`)
+                navigate(`/farmers/edit-crop`)
               }
               onRefresh={fetchDashboard}
             />
