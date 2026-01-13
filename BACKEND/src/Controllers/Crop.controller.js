@@ -5,7 +5,7 @@ import { ApiResponse } from "../Utils/ApiResponse.js";
 import { Crop } from "../Models/Crop.model.js";
 
 const AddCrop=AsyncHandler(async(req ,res )=>{
-    const farmerId=req?.user?.user._id;
+    const farmerId=req?.user._id;
 
     const {cropName,quantity,pricePerKg,location,availableFrom}=req.body;
 
