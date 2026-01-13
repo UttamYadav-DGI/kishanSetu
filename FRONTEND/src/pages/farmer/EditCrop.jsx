@@ -50,7 +50,7 @@ const EditCrop = () => {
 
     try {
       await api.get(
-        `/api/v1/farmers/crops`,
+        `/api/v1/crops/crops`,
         formData,
         { withCredentials: true }
       );
