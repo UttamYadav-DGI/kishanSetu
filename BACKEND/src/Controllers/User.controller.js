@@ -24,7 +24,7 @@ const generateAccessAndRefreshToken = async (userId) => {
 
 
 const register= AsyncHandler(async(req,res,next)=>{
-    const {Name,PhoneNo,EmailId,Password}=req.body
+    const {Name,PhoneNo,EmailId,Password,Role}=req.body
     console.log(req.body)  //eee
     if(!Name || !PhoneNo || !EmailId || !Password){
         throw new ApiError(401,"Field is mandatory !!");
@@ -32,7 +32,9 @@ const register= AsyncHandler(async(req,res,next)=>{
     
     const existedUser=await User.findOne(
         {
-        $or:[{PhoneNo},{EmailId}]
+        $or:[{PhoneNo:PhoneNo.String()},
+            {EmailId:EmailId.toLowerCase()}
+        ]
         }
     )
     if(existedUser) throw new ApiError(401,"User already Exists");
@@ -48,13 +50,14 @@ const register= AsyncHandler(async(req,res,next)=>{
     const createUser=await User.create(
         {
             Name:Name.toLowerCase(),
-            PhoneNo,
+            PhoneNo:PhoneNo.String(),
             EmailId:EmailId.toLowerCase(),
             Avatar:avatarUrl,
+            Role:Role || "farmer"
             Password,
         }
     )
-    const createdUser=await User.findById(createUser._id).select(" -Password");
+    const createdUser=await User.findById(createUser._id).select(" -Password -RefreshToken");
     if(!createdUser) throw new ApiError(500,"somthing went wrong,user register failed")
         
 

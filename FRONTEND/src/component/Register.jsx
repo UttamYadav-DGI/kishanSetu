@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import api from "../Services/Api";
+
 export default function Register() {
     const navigate = useNavigate();
 
@@ -10,6 +11,7 @@ export default function Register() {
     PhoneNo: "",
     EmailId: "",
     Password: "",
+    Role:"farmer",
     avatar: null, // optional image
   });
 
@@ -26,18 +28,41 @@ export default function Register() {
   const handleFileChange = (e) => {
     setFormData({ ...formData, avatar: e.target.files[0] });
   };
+// };
+    // Basic validation
+    const validateForm=()=>{
 
-  // Submit form
+    if (!formData.Name || !formData.PhoneNo || !formData.EmailId || !formData.Password) {
+      return "All fields except image are mandatory";
+    }
+    if (!/^[0-9]{10}$/.test(formData.PhoneNo)) {
+      return "Phone number must be exactly 10 digit character not allowed";
+    }
+
+    if (!/^\S+@\S+\.\S+$/.test(formData.EmailId)) {
+      return "Invalid email address";
+    }
+
+    if (formData.Password.length < 6) {
+      return "Password must be at least 6 characters";
+    }
+
+    return null;
+    };
+   
+
+  //submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setSuccess("");
 
-    // Basic validation
-    if (!formData.Name || !formData.PhoneNo || !formData.EmailId || !formData.Password) {
-      setError("All fields except image are mandatory");
+    const validationError = validateForm();
+    if (validationError) {
+      setError(validationError);
       return;
     }
+
 
     try {
       setLoading(true);
@@ -47,6 +72,7 @@ export default function Register() {
       data.append("Name", formData.Name);
       data.append("PhoneNo", formData.PhoneNo);
       data.append("EmailId", formData.EmailId);
+      data.append("Role",formData.Role);
       data.append("Password", formData.Password);
 
       if (formData.avatar) {
@@ -117,6 +143,7 @@ export default function Register() {
             placeholder="Phone Number"
             value={formData.PhoneNo}
             onChange={handleChange}
+            maxLength={10}
             className="w-full border p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
           />
 
@@ -128,6 +155,15 @@ export default function Register() {
             onChange={handleChange}
             className="w-full border p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
           />
+          <select
+          name="Role"
+          value={formData.Role}
+          onChange={handleChange}
+          className="w-full border p-2 rounded-lg focus:ring-2 focus:ring-green-400"
+          >
+          <option value="farmer">Farmer</option>
+          <option value="buyer">Buyer</option>
+        </select>
 
           <input
             type="password"
@@ -165,4 +201,4 @@ export default function Register() {
       </div>
     </div>
   );
-}
+};
