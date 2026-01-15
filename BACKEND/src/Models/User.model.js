@@ -2,43 +2,58 @@ import mongoose from 'mongoose'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 const UserSchema=new mongoose.Schema({
-    
-        Name:{
-            type:String,
-            trim:true,
-            lowercase:true,
-            required:true
-        },
-        PhoneNo:{
-            type:Number,
-            required:true,
-        },
-        EmailId:{
-            type:String,
-            lowercase:true,
-            required:true
-        },
-        Password:{
-            type:String,
-            required :true
-        },
-        Avatar:{
-            type:String,
-        },
-        AccessToken:{
-            type:String,
-        },
-        RefreshToken:{
-            type:String,
-        },
-        Role:{
-            type:String,
-            enum:["farmer" | "buyer"],
-            required:true,
-            default:"farmer",
+  Name: {
+    type: String,
+    trim: true,
+    lowercase: true,
+    required: true,
+    minlength: 2
+  },
 
-        }
-}, {timestamps:true})
+  PhoneNo: {
+    type: String,
+    required: true,
+    unique: true,
+    match: [/^[0-9]{10}$/, "Phone number must be 10 digits"]
+  },
+
+  EmailId: {
+    type: String,
+    required: true,
+    unique: true,
+    lowercase: true,
+    trim: true,
+    match: [/^\S+@\S+\.\S+$/, "Please enter a valid email"]
+  },
+
+  Password: {
+    type: String,
+    required: true,
+    minlength: 6
+  },
+
+  Avatar: {
+    type: String
+  },
+
+  AccessToken: {
+    type: String
+  },
+
+  RefreshToken: {
+    type: String
+  },
+
+  Role: {
+    type: String,
+    enum: ["farmer", "buyer"],
+    default: "farmer",
+    required: true
+  }
+},
+{ timestamps: true }
+);
+
 
 UserSchema.pre("save", async function (next) {
     if (!this.isModified("Password")) return next;
