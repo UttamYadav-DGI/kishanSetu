@@ -53,7 +53,7 @@ const register= AsyncHandler(async(req,res,next)=>{
             PhoneNo:PhoneNo.String(),
             EmailId:EmailId.toLowerCase(),
             Avatar:avatarUrl,
-            Role:Role || "farmer"
+            Role:Role || "farmer",
             Password,
         }
     )
