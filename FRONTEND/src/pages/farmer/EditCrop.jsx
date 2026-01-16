@@ -49,7 +49,7 @@ const EditCrop = () => {
     setLoading(true);
 
     try {
-      await api.get(
+      await api.post(
         `/api/v1/crops/crops`,
         formData,
         { withCredentials: true }
