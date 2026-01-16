@@ -10,7 +10,8 @@ const EditCrop = () => {
     cropName: "",
     quantity: "",
     pricePerKg: "",
-    location: ""
+    location: "",
+    availableFrom:"",
   });
 
   const [loading, setLoading] = useState(false);
@@ -34,7 +35,8 @@ const EditCrop = () => {
         cropName: crop.cropName,
         quantity: crop.quantity,
         pricePerKg: crop.pricePerKg,
-        location: crop.location || ""
+        location: crop.location || "",
+        availableFrom:crop.availableFrom
       });
     } catch (error) {
       alert("Failed to load crop");
@@ -103,6 +105,14 @@ const EditCrop = () => {
           onChange={handleChange}
           className="w-full border px-3 py-2 rounded"
           placeholder="Location"
+        />
+
+         <input
+          name="availableFrom"
+          value={formData.availableFrom}
+          onChange={handleChange}
+          className="w-full border px-3 py-2 rounded"
+          placeholder="availableFrom"
         />
 
         <button
