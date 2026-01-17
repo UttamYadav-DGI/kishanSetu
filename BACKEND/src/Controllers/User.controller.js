@@ -27,7 +27,7 @@ const register= AsyncHandler(async(req,res,next)=>{
     const {Name,PhoneNo,EmailId,Password,Role}=req.body
 
     if(!Name || !PhoneNo || !EmailId || !Password){
-        throw new ApiError(401,"Field is mandatory !!");
+        throw new ApiError(400,"Field is mandatory !!");
     }
     
     const existedUser=await User.findOne(
@@ -37,7 +37,7 @@ const register= AsyncHandler(async(req,res,next)=>{
         ]
         }
     )
-    if(existedUser) throw new ApiError(401,"User already Exists");
+    if(existedUser) throw new ApiError(409,"User already Exists");
    
 
     let avatarUrl="";
@@ -56,7 +56,7 @@ const register= AsyncHandler(async(req,res,next)=>{
             Role:Role || "farmer",
             Password,
         }
-    )
+    );
     const createdUser=await User.findById(createUser._id).select(" -Password -RefreshToken");
     if(!createdUser) throw new ApiError(500,"somthing went wrong,user register failed")
         

@@ -103,7 +103,13 @@ export default function Register() {
       });
 
     } catch (err) {
-      setError(err.response?.data?.message || "Registration failed");
+      const message=err.response?.data?.message;
+      if(message==="User already exists"){
+        setError("User already exists. please login")
+      }
+      else{
+      setError(message || "Registration failed");
+      }
     } finally {
       setLoading(false);
     }
