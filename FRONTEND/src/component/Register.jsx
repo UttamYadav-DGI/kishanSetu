@@ -104,7 +104,7 @@ export default function Register() {
       });
 
     } catch (err) {
-  const message = err.response?.data?.message;
+  const message = err.response?.data;
   console.log("mess", message);
 
   if (message?.toLowerCase().includes("already")) {
