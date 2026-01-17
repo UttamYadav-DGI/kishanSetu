@@ -104,6 +104,7 @@ export default function Register() {
 
     } catch (err) {
       const message=err.response?.data?.message;
+      console.log("mess",message)
       if(message==="User already exists"){
         setError("User already exists. please login")
       }
