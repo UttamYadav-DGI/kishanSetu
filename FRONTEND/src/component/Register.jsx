@@ -98,22 +98,22 @@ export default function Register() {
         Name: "",
         PhoneNo: "",
         EmailId: "",
+        Role:"",
         Password: "",
         avatar: null,
       });
 
     } catch (err) {
-      const message=err.response?.data?.message;
-      console.log("mess",message)
-      if(message==="User already exists"){
-        setError("User already exists. please login")
-      }
-      else{
-      setError(message || "Registration failed");
-      }
-    } finally {
-      setLoading(false);
-    }
+  const message = err.response?.data?.message;
+  console.log("mess", message);
+
+  if (message?.toLowerCase().includes("already")) {
+    setError("User already exists. Please login");
+  } else {
+    setError(message || "Registration failed");
+  }
+}
+
   };
 
   return (
