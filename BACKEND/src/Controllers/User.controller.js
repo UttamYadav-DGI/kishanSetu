@@ -32,7 +32,7 @@ const register= AsyncHandler(async(req,res,next)=>{
     
     const existedUser=await User.findOne(
         {
-        $or:[{PhoneNo:PhoneNo.String()},
+        $or:[{PhoneNo:PhoneNo},
             {EmailId:EmailId.toLowerCase()}
         ]
         }
