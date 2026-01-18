@@ -106,11 +106,12 @@ const login= AsyncHandler(async(req,res,next)=>{
     const {accessToken,refreshToken}= await generateAccessAndRefreshToken(user._id);
     const loggedInUser=await User.findById(user._id).select(" -Password -RefreshToken")
     //sending into coolkies
+    const isProduction = process.env.NODE_ENV === "production";
 
     const options={
         httpOnly:true,
-        secure:true,
-         sameSite: "none",
+        secure:isProduction,
+         sameSite: isProduction ? "none":"lax"
     }
 
     return res
@@ -140,10 +141,12 @@ const logout= AsyncHandler(async(req,res,next)=>{
             new:true
         }
     )
+    const isProduction = process.env.NODE_ENV === "production";
+
      const options={
         httpOnly:true,
-        secure:true,
-        sameSite:"none"
+        secure:isProduction,
+        sameSite: isProduction ? "none":"lax"
     }
     return res
         .status(200)

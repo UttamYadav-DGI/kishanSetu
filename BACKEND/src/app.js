@@ -21,6 +21,17 @@ app.use(
   })
 );
 
+
+//global error middleware that are help to send clear and concise error message to frontend
+app.use((err, req, res, next) => {
+  res.status(err.statusCode || 500).json({
+    success: false,
+    message: err.message || "Internal Server Error",
+  });
+});
+
+
+
 import userRouter from "./Routers/User.routes.js";
 import farmerRouter from "./Routers/farmer.routes.js";
 import cropRouter from "./Routers/crop.routes.js";
