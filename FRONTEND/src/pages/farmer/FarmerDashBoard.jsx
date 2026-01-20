@@ -4,6 +4,8 @@ import CropCard from "../../component/CropCard";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import api from "../../Services/Api";
+
+
 const FarmerDashboard = () => {
   const navigate = useNavigate();
   const [dashboard, setDashboard] = useState(null);
@@ -31,7 +33,6 @@ const FarmerDashboard = () => {
       console.error(error);
     }
   };
-
   if (!dashboard) {
     return <p className="text-center mt-10">Loading...</p>;
   }
@@ -125,7 +126,7 @@ const FarmerDashboard = () => {
               key={crop._id}
               crop={crop}
               onEdit={() =>
-                navigate(`/farmers/edit-crop`)
+                navigate(`/farmers/edit-crop/:id`)
               }
               onRefresh={fetchDashboard}
             />

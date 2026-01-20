@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../../Services/Api";
+
 const EditCrop = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -11,10 +11,11 @@ const EditCrop = () => {
     quantity: "",
     pricePerKg: "",
     location: "",
-    availableFrom:"",
+    availableFrom: ""
   });
 
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
     fetchCrop();
@@ -23,23 +24,32 @@ const EditCrop = () => {
   const fetchCrop = async () => {
     try {
       const res = await api.get(
-        `/api/v1/farmers/dashboard`,
+        "/api/v1/farmers/dashboard",
         { withCredentials: true }
       );
 
       const crop = res.data.data.crops.find(c => c._id === id);
-
-      if (!crop) return alert("Crop not found");
+      console.log("cccccc",crop);
+      if (!crop) {
+        setErrorMsg("Crop not found");
+        return;
+      }
 
       setFormData({
         cropName: crop.cropName,
         quantity: crop.quantity,
         pricePerKg: crop.pricePerKg,
         location: crop.location || "",
-        availableFrom:crop.availableFrom
+        availableFrom: crop.availableFrom
+          ? crop.availableFrom.split("T")[0]
+          : ""
       });
+
     } catch (error) {
-      alert("Failed to load crop");
+      console.log("Fetch error:", error.response?.data);
+      setErrorMsg(
+        error.response?.data?.message || "Failed to load crop"
+      );
     }
   };
 
@@ -49,16 +59,20 @@ const EditCrop = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setErrorMsg("");
 
     try {
-      await api.post(
-        `/api/v1/crops/crops`,
+      await api.put(
+        `/api/v1/crops/crops/${id}`,
         formData,
         { withCredentials: true }
       );
       navigate("/farmers/dashboard");
     } catch (error) {
-      alert("Failed to update crop");
+      console.log("Update error:", error.response?.data);
+      setErrorMsg(
+        error.response?.data?.message || "Failed to update crop"
+      );
     } finally {
       setLoading(false);
     }
@@ -67,6 +81,10 @@ const EditCrop = () => {
   return (
     <div className="max-w-2xl mx-auto p-6">
       <h1 className="text-2xl font-bold mb-6">Edit Crop 🌱</h1>
+
+      {errorMsg && (
+        <p className="text-red-600 mb-4">{errorMsg}</p>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
 
@@ -107,12 +125,12 @@ const EditCrop = () => {
           placeholder="Location"
         />
 
-         <input
+        <input
+          type="date"
           name="availableFrom"
           value={formData.availableFrom}
           onChange={handleChange}
           className="w-full border px-3 py-2 rounded"
-          placeholder="availableFrom"
         />
 
         <button

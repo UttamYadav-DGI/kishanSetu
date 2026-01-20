@@ -1,15 +1,15 @@
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import api from "../Services/Api";
+
 const CropCard = ({ crop, onRefresh }) => {
   const navigate = useNavigate();
-
   const handleDelete = async () => {
     if (!window.confirm("Are you sure you want to delete this crop?")) return;
 
     try {
       await api.delete(
-        `/api/crops/crops/${crop._id}`,
+        `/api/v1/crops/crops/${crop._id}`,
         { withCredentials: true }
       );
       onRefresh(); // reload dashboard crops
@@ -27,7 +27,7 @@ const CropCard = ({ crop, onRefresh }) => {
 
       <div className="flex gap-2 mt-3">
         <button
-          onClick={() => navigate(`/farmers/edit-crop`)}
+          onClick={() => navigate(`/farmers/edit-crop/${crop._id}`)}
           className="bg-blue-500 text-white px-3 py-1 rounded"
         >
           Edit

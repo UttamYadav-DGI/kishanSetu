@@ -13,20 +13,14 @@ const AddCrop=AsyncHandler(async(req ,res )=>{
         throw new ApiError(403,"field are empty");
     }
 
-    const crops=await Crop.findOneAndUpdate(
-        {farmerId},
-        {
-            $set:{
+    const crops=await Crop.create( // we create a crop 
+        {   
+                farmerId,
                 cropName,
                 quantity,
                 pricePerKg,
                 location,
                 availableFrom
-            }
-        },{
-            new:true,
-            upsert:true,
-            runValidators: true
         }
     )
 
@@ -34,5 +28,54 @@ const AddCrop=AsyncHandler(async(req ,res )=>{
 
 });
 
+    //for updating crop we need crop_id because each individuals farmers have more than one crops,so finding as a specfic crops to update we required a cropsId so we take it from frontend
 
-export {AddCrop};
+const UpdateCrop=AsyncHandler(async(req,res)=>{ 
+    const {id}=req.params;
+    const farmerId=req.user?._id
+    if(!farmerId) throw new ApiError(401,"unauthorized access");
+
+    const crop= await Crop.findOne(
+        {
+            _id : id,
+            farmerId
+        }
+    );
+
+    if(!crop) throw new ApiError(404,"crop not found");
+
+    Object.assign(crop,req.body); //This copies values from req.body into the existing crop object.
+    await crop.save(); //This saves the updated document back to MongoDB.
+
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200,crop,"crop update successfully"));
+})
+
+const DeleteCrop=AsyncHandler(async(req,res)=>{
+    const {id}=req.params
+    if (!id) {
+  throw new ApiError(400, "Crop id is required");
+}
+
+    const farmerId=req.user?._id
+    if(!farmerId) throw new ApiError(401,"unauthorized access");
+
+    const crop=await Crop.findOneAndDelete({
+        _id:id,
+        farmerId
+    })
+
+    if(!crop) throw new ApiError(404,"crop not found")
+    
+    return res
+            .status(200)
+            .json(new ApiResponse(200,{},"crop deleted successfully"));
+})
+
+
+export {AddCrop,
+        UpdateCrop,
+        DeleteCrop
+        }

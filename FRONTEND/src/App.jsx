@@ -14,9 +14,12 @@ import FarmerDashboard from "./pages/farmer/FarmerDashBoard.jsx";
 import EditCrop from "./pages/farmer/EditCrop.jsx";
 import AddCrop from "./pages/farmer/AddCrop.jsx";
 import FarmerProfile from "./pages/farmer/FarmerProfile.jsx";
+import DashboardCard from "./component/DashboardCard.jsx";
+import CropCard from "./component/CropCard.jsx";
 
 export default function App() {
   const [chatLang, setChatLang] = useState("hi");
+
   return (
     <>
    <Navbar setChatLang={setChatLang}></Navbar>
@@ -26,7 +29,7 @@ export default function App() {
       <Route path="/farmers/dashboard" element={<FarmerDashboard/>}></Route>
       <Route path="/farmers/profile" element={<FarmerProfile/>}></Route>
 
-      <Route path="/farmers/edit-crop" element={<EditCrop/>} ></Route>
+      <Route path="/farmers/edit-crop/:id" element={<EditCrop/>} ></Route>
       <Route path="/farmers/add-crop" element={<AddCrop/>} ></Route>
       <Route path="/login" element={<Login />}></Route>
       <Route path="/contact" element={<Contact />}></Route>

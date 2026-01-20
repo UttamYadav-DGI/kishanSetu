@@ -65,7 +65,7 @@ const getFarmerDashboard = AsyncHandler(async (req, res) => {
   const userId = req.user._id;
 
   // 1️⃣ Validate user
-  const user = await User.findById(userId).select("Name Role");
+  const user = await User.findById(userId).select("Name Role Avatar");
 
   if (!user || user.Role !== "farmer") {
     throw new ApiError(403, "Farmer access only");
