@@ -4,42 +4,45 @@ import { ApiError } from "../Utils/ApiError.js";
 import { ApiResponse } from "../Utils/ApiResponse.js";
 import { AsyncHandler } from "../Utils/AsyncHandler.js";
 import { Crop } from "../Models/Crop.model.js";
-const setFarmerProfile=AsyncHandler(async(req ,res ,next)=>{
-    const userId=req?.user._id;
 
-    const user=await User.findById(userId);
-    
-    if(user.Role!=="farmer"){
-        throw new ApiError(403,"Only farmer can create profile");
-    }
+const setFarmerProfile = AsyncHandler(async (req, res) => {
+  const userId = req.user?._id;
 
-    const {LandSize,CropGrown,Experience,Location}=req.body;
-
-    if(!LandSize || !Location){
-        throw new ApiError(403,"Land size and location is required");
-    }
-
-    const farmer = await Farmer.findOneAndUpdate(
-  { userId },
-  {
-    $set: {
-      LandSize,
-      CropGrown,
-      Experience,
-      Location
-    }
-  },
-  {
-    new: true,
-    upsert: true,
-    runValidators: true
+  if (!userId) {
+    throw new ApiError(401, "Unauthorized: user not found");
   }
-);
 
+  const user = await User.findById(userId);
+  if (!user || user.Role !== "farmer") {
+    throw new ApiError(403, "Only farmer can create profile");
+  }
 
-    return res.status(200).json(new ApiResponse(200,farmer,"farmer profile saved successfully"));
+  const { LandSize, CropGrown, Experience, Location } = req.body;
+
+  if (!LandSize || !Location) {
+    throw new ApiError(403, "Land size and location is required");
+  }
+
+  const farmer = await Farmer.findOneAndUpdate(
+    { userId },
+    {
+       userId,
+        LandSize,
+        CropGrown,
+        Experience,
+        Location,
+    },
+    {
+      new: true,
+      upsert: true,
+      runValidators: true,
+    }
+  );
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, farmer, "Farmer profile saved successfully"));
 });
-
 
 const getFarmerProfile=AsyncHandler(async(req,res)=>{
     

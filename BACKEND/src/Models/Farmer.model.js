@@ -1,6 +1,6 @@
 
 import mongoose from "mongoose";
-
+import { User } from "./User.model.js";
 const farmerSchema=new mongoose.Schema({
 
     userId: {
@@ -8,7 +8,6 @@ const farmerSchema=new mongoose.Schema({
     ref: "User",
     required: true,
     unique: true,
-    index: true
   },
 
   LandSize: {

@@ -29,7 +29,7 @@ const FarmerProfile = () => {
       );
 
       const profile = res.data?.data?.farmerProfile;
-
+      console.log("profile",profile)
       // If profile exists → redirect to dashboard
       if (profile) {
         navigate("/farmers/dashboard");

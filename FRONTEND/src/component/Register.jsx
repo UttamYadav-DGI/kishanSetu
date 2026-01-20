@@ -105,14 +105,12 @@ export default function Register() {
 
     } catch (err) {
   const message = err.response?.data?.message;
-  console.log("mess", message);
-
-  if (message?.toLowerCase().includes("already")) {
-    setError("User already exists. Please login");
-  } else {
-    setError(message || "Registration failed");
+    alert(message)
+    setError(message);
   }
-}
+  finally{
+    setLoading(false);
+  }
 
   };
 

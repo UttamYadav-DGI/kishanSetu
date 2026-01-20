@@ -22,13 +22,6 @@ app.use(
 );
 
 
-//global error middleware that are help to send clear and concise error message to frontend
-app.use((err, req, res, next) => {
-  res.status(err.statusCode || 500).json({
-    success: false,
-    message: err.message || "Internal Server Error",
-  });
-});
 
 
 
@@ -39,6 +32,15 @@ import cropRouter from "./Routers/crop.routes.js";
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/farmers", farmerRouter);
 app.use("/api/v1/crops", cropRouter);
+
+//global error middleware that are help to send clear and concise error message to frontend
+app.use((err, req, res, next) => {
+  res.status(err.statusCode || 500).json({
+    success: false,
+    message: err.message || "Internal Server Error",
+  });
+});
+ 
 
 const PORT = process.env.PORT || 3000;
 

@@ -1,5 +1,5 @@
 import { v2 as cloudinary } from 'cloudinary';
-
+import fs from 'fs'
 
     // Configuration
     cloudinary.config({ 
@@ -16,7 +16,10 @@ import { v2 as cloudinary } from 'cloudinary';
             resource_type:"auto"
         });
         console.log("image upload on cloudinary",response.url);
+
+        fs.unlinkSync(localfilePath) //delete temp file after succesful upload
         return response;
+
         }
         catch(error){
             fs.unlinkSync(localfilePath);

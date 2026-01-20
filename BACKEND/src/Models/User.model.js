@@ -55,12 +55,12 @@ const UserSchema=new mongoose.Schema({
 );
 
 
-UserSchema.pre("save", async function (next) {
-    if (!this.isModified("Password")) return next();
+UserSchema.pre("save", async function () {
+  if (!this.isModified("Password")) return;
 
-    this.Password = await bcrypt.hash(this.Password, 10);
-    next();
+  this.Password = await bcrypt.hash(this.Password, 10);
 });
+
 
 
 UserSchema.methods.isPasswordCorrect=async function(Password){
