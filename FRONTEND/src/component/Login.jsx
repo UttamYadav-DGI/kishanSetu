@@ -1,9 +1,13 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/Authcontext";
 import api from "../Services/Api";
 export default function Login() {
   const navigate = useNavigate();
+
+  const { login } = useAuth();
+
 
   const [formData, setFormData] = useState({
     identifier: "", // email or phone
@@ -43,7 +47,14 @@ export default function Login() {
       );
 
       setSuccess("Login successful!");
-      console.log("User Data:", response.data);
+      const token=response.data?.data?.accessToken
+      login(token)
+      // console.log("User Data:", response.data);
+
+
+      //add token in localstorage
+      // localStorage.setItem("token", token);
+
 
       // Optional redirect after login
       setTimeout(() => navigate("/farmers/dashboard"), 1000);

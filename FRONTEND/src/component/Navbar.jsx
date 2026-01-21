@@ -3,9 +3,11 @@ import { useTranslation } from 'react-i18next';
 import Login from "./Login";
 import { Link } from 'react-router-dom';
 import { useNavigate } from "react-router-dom";
-
+import { useAuth } from "../context/Authcontext";
 const Navbar = ({setChatLang}) => {
 
+  const{isLoggedIn}=useAuth();
+  
    const navigate = useNavigate();
      const handleClick = () => {
     navigate("/login"); // redirect to login page
@@ -49,9 +51,22 @@ const Navbar = ({setChatLang}) => {
             
             <Link to="/contact"  className="hover:text-green-600">{t('navbar.contact')}</Link>
              
-          <button onClick={handleClick} className="bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-2 rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-200 transform hover:scale-105 shadow-lg">
-            {t('navbar.loginRegister')}
-          </button>
+          {!isLoggedIn ? (
+  <button
+    onClick={handleClick}
+    className="bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-2 rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-200 transform hover:scale-105 shadow-lg"
+  >
+    {t("navbar.loginRegister")}
+  </button>
+) : (
+  <button
+    onClick={() => navigate("/farmers/dashboard")}
+    className="bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-2 rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-200 transform hover:scale-105 shadow-lg"
+  >
+    Dashboard
+  </button>
+)}
+
 
           {/* Language Dropdown */}
           <div className="relative">
@@ -129,9 +144,22 @@ const Navbar = ({setChatLang}) => {
   {t('navbar.contact')}
 </Link>
           
-          <button onClick={handleClick} className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-2 rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-200 transform hover:scale-105 shadow-lg">
-            {t('navbar.loginRegister')}
-          </button>
+          {!isLoggedIn ? (
+  <button
+    onClick={handleClick}
+    className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-2 rounded-lg"
+  >
+    {t("navbar.loginRegister")}
+  </button>
+) : (
+  <button
+    onClick={() => navigate("/farmers/dashboard")}
+    className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-2 rounded-lg"
+  >
+    Dashboard
+  </button>
+)}
+
           
           {/* Language Dropdown in Mobile */}
           {/* <div className="relative">

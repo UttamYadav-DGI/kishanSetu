@@ -69,6 +69,9 @@ const AddCrop = () => {
             type="number"
             name="quantity"
             value={formData.quantity}
+            placeholder="minimum quantity is 1kg"
+            min="1"
+            step="1" //min="1" → browser won’t allow values less than 1 using arrows step="1" → prevents decimals
             onChange={handleChange}
             className="w-full border rounded px-3 py-2"
             required
@@ -82,6 +85,9 @@ const AddCrop = () => {
             name="pricePerKg"
             value={formData.pricePerKg}
             onChange={handleChange}
+            placeholder="minimum price (₹)10 per Kg"
+            min="10"
+            step="1"
             className="w-full border rounded px-3 py-2"
             required
           />
