@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { buyCrop } from "../Controllers/Order.controller.js";
 import { getReceipt } from "../Controllers/Reciept.controller.js";
-import { verifyJWT } from "../MiddleWare/Auth.middleWare.js";
+import { verifyJWT } from "../MiddleWare/Auth.middleware.js";
 import { AllowRoles } from "../MiddleWare/Role.middleware.js";
 import { getMyOrders } from "../Controllers/Order.controller.js";
 const router = Router();

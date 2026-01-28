@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getCropDetailsForBuyer } from "../../services/buyerApi";
+import { getCropDetailsForBuyer } from "../../Services/buyerApi.js";
 
 const CropDetails = () => {
   const { id } = useParams();

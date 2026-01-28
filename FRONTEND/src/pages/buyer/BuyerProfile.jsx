@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { setBuyerProfile } from "../../services/buyerApi";
+import { setBuyerProfile } from "../../Services/buyerApi";
 import { useNavigate } from "react-router-dom";
 
 const BuyerProfile = () => {
