@@ -31,6 +31,10 @@ const UserSchema=new mongoose.Schema({
     required: true,
     minlength: 6
   },
+  Address:{
+    type:String,
+    required:true,
+  },
 
   Avatar: {
     type: String

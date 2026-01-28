@@ -24,9 +24,9 @@ const generateAccessAndRefreshToken = async (userId) => {
 
 
 const register= AsyncHandler(async(req,res,next)=>{
-    const {Name,PhoneNo,EmailId,Password,Role}=req.body
+    const {Name,PhoneNo,EmailId,Password,Role,Address}=req.body
 
-    if(!Name || !PhoneNo || !EmailId || !Password){
+    if(!Name || !PhoneNo || !EmailId || !Password || !Address){
         throw new ApiError(400,"Field is mandatory !!");
     }
     
@@ -55,6 +55,7 @@ const register= AsyncHandler(async(req,res,next)=>{
             EmailId:EmailId.toLowerCase().trim(),
             Avatar:avatarUrl,
             Role:Role || "farmer",
+            Address,
             Password,
         }
     );

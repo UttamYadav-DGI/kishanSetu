@@ -28,11 +28,15 @@ app.use(
 import userRouter from "./Routers/User.routes.js";
 import farmerRouter from "./Routers/farmer.routes.js";
 import cropRouter from "./Routers/crop.routes.js";
-
+import BuyerRouter from "./Routers/Buyer.routes.js";
+import OrderRouter from "./Routers/order.routes.js"
+import authRouter from "./Routers/auth.routes.js"
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/farmers", farmerRouter);
 app.use("/api/v1/crops", cropRouter);
-
+app.use("/api/v1/buyers",BuyerRouter);
+app.use("/api/v1/order",OrderRouter)
+app.use("/api/v1/auth",authRouter);
 //global error middleware that are help to send clear and concise error message to frontend
 app.use((err, req, res, next) => {
   res.status(err.statusCode || 500).json({

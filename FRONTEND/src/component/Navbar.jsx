@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/Authcontext";
 
 const Navbar = ({ setChatLang }) => {
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, user } = useAuth();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
 
@@ -33,17 +33,34 @@ const Navbar = ({ setChatLang }) => {
     return currentLang ? currentLang.display : t("navbar.language");
   };
 
-  // ✅ User clicks Login/Register
+  // ✅ open role modal
   const openRoleModal = () => {
     setRole("");
     setShowRoleModal(true);
   };
 
-  // ✅ After role select => go login page
+  // ✅ Continue after selecting role (go login page)
   const handleContinue = () => {
-    if (!role) return alert("Please select a role");
+    if (!role) {
+      alert("Please select a role");
+      return;
+    }
+
     setShowRoleModal(false);
-    navigate(`/login?role=${role}`);
+    setIsMenuOpen(null);
+
+    // ✅ One login page only
+    // You can access this role in Login.jsx using: const location = useLocation();
+    // location.state?.role
+    navigate("/login", { state: { role } });
+  };
+
+  // ✅ Dashboard redirect based on logged-in user role
+  const goToDashboard = () => {
+    if (user?.role === "farmer") navigate("/farmers/dashboard");
+    else if (user?.role === "buyer") navigate("/buyers/dashboard");
+    else if (user?.role === "admin") navigate("/admin/dashboard");
+    else navigate("/");
   };
 
   return (
@@ -82,7 +99,7 @@ const Navbar = ({ setChatLang }) => {
             </button>
           ) : (
             <button
-              onClick={() => navigate("/farmers/dashboard")}
+              onClick={goToDashboard}
               className="bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-2 rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-200 transform hover:scale-105 shadow-lg"
             >
               Dashboard
@@ -98,8 +115,18 @@ const Navbar = ({ setChatLang }) => {
               className="bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-2 rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-200 transform hover:scale-105 shadow-lg flex items-center space-x-2"
             >
               <span>{getCurrentLanguageDisplay()}</span>
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </button>
 
@@ -128,11 +155,26 @@ const Navbar = ({ setChatLang }) => {
           onClick={() => setIsMenuOpen(isMenuOpen === "menu" ? null : "menu")}
           className="md:hidden focus:outline-none"
         >
-          <svg className="w-6 h-6 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg
+            className="w-6 h-6 text-green-700"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
             {isMenuOpen === "menu" ? (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             ) : (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 12h16m-7 6h7"
+              />
             )}
           </svg>
         </button>
@@ -149,15 +191,24 @@ const Navbar = ({ setChatLang }) => {
             {t("navbar.about")}
           </Link>
 
-          <Link to="/chatbot" className="block py-2 border-b hover:text-green-600">
+          <Link
+            to="/chatbot"
+            className="block py-2 border-b hover:text-green-600"
+          >
             {t("navbar.chatbot")}
           </Link>
 
-          <Link to="/services" className="block py-2 border-b hover:text-green-600">
+          <Link
+            to="/services"
+            className="block py-2 border-b hover:text-green-600"
+          >
             {t("navbar.services")}
           </Link>
 
-          <Link to="/contact" className="block py-2 border-b hover:text-green-600">
+          <Link
+            to="/contact"
+            className="block py-2 border-b hover:text-green-600"
+          >
             {t("navbar.contact")}
           </Link>
 
@@ -170,7 +221,7 @@ const Navbar = ({ setChatLang }) => {
             </button>
           ) : (
             <button
-              onClick={() => navigate("/farmers/dashboard")}
+              onClick={goToDashboard}
               className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-2 rounded-lg"
             >
               Dashboard
@@ -194,7 +245,7 @@ const Navbar = ({ setChatLang }) => {
             >
               <option value="">Choose Role</option>
               <option value="farmer">Farmer</option>
-              <option value="farmer">Buyer</option>
+              <option value="buyer">Buyer</option>
               <option value="admin">Admin</option>
             </select>
 

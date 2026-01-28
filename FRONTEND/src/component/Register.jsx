@@ -11,6 +11,7 @@ export default function Register() {
     PhoneNo: "",
     EmailId: "",
     Password: "",
+    Address:"",
     Role:"farmer",
     avatar: null, // optional image
   });
@@ -73,6 +74,7 @@ export default function Register() {
       data.append("PhoneNo", formData.PhoneNo);
       data.append("EmailId", formData.EmailId);
       data.append("Role",formData.Role);
+      data.append("Address",formData.Address);
       data.append("Password", formData.Password);
 
       if (formData.avatar) {
@@ -169,6 +171,15 @@ export default function Register() {
           <option value="farmer">Farmer</option>
           <option value="buyer">Buyer</option>
         </select>
+
+         <input
+            type="text"
+            name="Address"
+            placeholder="Address"
+            value={formData.Address}
+            onChange={handleChange}
+            className="w-full border p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
+          />
 
           <input
             type="password"

@@ -14,6 +14,11 @@ import FarmerDashboard from "./pages/farmer/FarmerDashBoard.jsx";
 import EditCrop from "./pages/farmer/EditCrop.jsx";
 import AddCrop from "./pages/farmer/AddCrop.jsx";
 import FarmerProfile from "./pages/farmer/FarmerProfile.jsx";
+import BuyerDashboard from "./pages/buyer/BuyerDashboard";
+import BuyerProtectedRoute from "./routes/ProtectedRoute.jsx";
+import Marketplace from "./pages/buyer/Marketplace.jsx";
+import CropDetails from "./pages/buyer/CropDetails.jsx";
+import BuyerProfile from "./pages/buyer/BuyerProfile.jsx";
 export default function App() {
   const [chatLang, setChatLang] = useState("hi");
 
@@ -25,9 +30,15 @@ export default function App() {
       <Route path="/" element={<Home />}></Route>
       <Route path="/farmers/dashboard" element={<FarmerDashboard/>}></Route>
       <Route path="/farmers/profile" element={<FarmerProfile/>}></Route>
-
       <Route path="/farmers/edit-crop/:id" element={<EditCrop/>} ></Route>
       <Route path="/farmers/add-crop" element={<AddCrop/>} ></Route>
+
+      <Route path="/buyers/dashboard" element={<BuyerProtectedRoute> <BuyerDashboard/> </BuyerProtectedRoute>} />
+      <Route path="/buyers/marketplace" element={<BuyerProtectedRoute> <Marketplace/> </BuyerProtectedRoute>} />
+      <Route path="/buyers/marketplace/:id" element={<BuyerProtectedRoute> <CropDetails /> </BuyerProtectedRoute>} />
+
+      <Route path="/buyers/profile" element={<BuyerProtectedRoute><BuyerProfile /> </BuyerProtectedRoute>} />
+
       <Route path="/login" element={<Login />}></Route>
       <Route path="/contact" element={<Contact />}></Route>
       <Route path="/services" element={<Services />}></Route>
