@@ -27,6 +27,11 @@ export const verifyJWT = AsyncHandler(async (req, res, next) => {
     throw new ApiError(401, "User not found");
   }
 
+  if (user.isBlocked) {
+  throw new ApiError(403, "Your account has been blocked by admin");
+}
+
+
   req.user = user;
   next();
 });

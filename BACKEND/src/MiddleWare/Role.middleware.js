@@ -1,11 +1,11 @@
-import { ApiError } from "../Utils/ApiError.js"
+import { ApiError } from "../Utils/ApiError.js";
 
-export const AllowRoles=(...roles)=>{
-    return (req,res,next)=>{
-
-        if(!req.user || !req.user.roles){
-            throw new ApiError(401,"Access Denied: You are not allowed");
-        }
-        next();
+export const requireRole = (role) => {
+  return (req, res, next) => {
+    const userRole = req.user?.Role || req.user?.role;
+    if (userRole !== role) {
+      throw new ApiError(403, `${role} access only`);
     }
-}
+    next();
+  };
+};

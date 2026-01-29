@@ -50,10 +50,16 @@ const UserSchema=new mongoose.Schema({
 
   Role: {
     type: String,
-    enum: ["farmer", "buyer"],
+    enum: ["farmer", "buyer","admin"],
     default: "farmer",
     required: true
-  }
+  },
+  
+  isBlocked: {
+  type: Boolean,
+  default: false,
+},
+
 },
 { timestamps: true }
 );

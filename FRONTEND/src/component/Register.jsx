@@ -170,6 +170,7 @@ export default function Register() {
           >
           <option value="farmer">Farmer</option>
           <option value="buyer">Buyer</option>
+          <option value="admin">Admin</option>
         </select>
 
          <input
