@@ -8,7 +8,7 @@ export default function CropMarketplace() {
   const [selectedCrop, setSelectedCrop] = useState(null);
 
   const fetchCrops = async () => {
-    const res = await api.get("/crops");
+    const res = await api.get("/api/v1/crops");
     setCrops(res.data.data);
   };
 

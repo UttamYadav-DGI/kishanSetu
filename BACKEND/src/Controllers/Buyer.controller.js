@@ -136,6 +136,7 @@ const getMarketplaceCrops = AsyncHandler(async (req, res) => {
   }
 
   const crops = await Crop.find(query)
+    .populate("farmerId", "Name PhoneNo EmailId Address") // ✅ added populate
     .sort({ createdAt: -1 })
     .limit(30);
 
@@ -143,6 +144,7 @@ const getMarketplaceCrops = AsyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, crops, "Marketplace crops fetched successfully"));
 });
+
 
 /**
  * ✅ Marketplace: Get Single Crop Details
@@ -152,7 +154,10 @@ const getCropDetailsForBuyer = AsyncHandler(async (req, res) => {
 
   if (!id) throw new ApiError(400, "Crop id is required");
 
-  const crop = await Crop.findById(id);
+  const crop = await Crop.findById(id).populate(
+    "farmerId",
+    "Name PhoneNo EmailId Address"
+  );
 
   if (!crop) throw new ApiError(404, "Crop not found");
 
@@ -160,6 +165,7 @@ const getCropDetailsForBuyer = AsyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, crop, "Crop details fetched successfully"));
 });
+
 
 export {
   setBuyerProfile,

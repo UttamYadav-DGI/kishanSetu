@@ -14,6 +14,11 @@ const buyerSchema=new mongoose.Schema({
         ref: "Crop",
       },
     ],
+City: String,
+State: String,
+Pincode: String,
+preferredCrops: { type: [String], default: [] }
+
   
    
 },
