@@ -7,7 +7,7 @@ export const setBuyerProfile = (payload) =>
 export const getBuyerProfile = () =>
   api.get("/api/v1/buyers/profile", { withCredentials: true });
 
-// ✅ Dashboard
+// ✅ Dashboard. 
 export const getBuyerDashboard = () =>
   api.get("/api/v1/buyers/dashboard", { withCredentials: true });
 
