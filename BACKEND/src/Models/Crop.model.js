@@ -21,7 +21,7 @@ const CropSchema = new mongoose.Schema(
   quantity: {
     type: Number,
     required: true,
-    min: [1, "Quantity must be at least 1 kg"],
+    min: [0, "Quantity must be at least 1 kg"],
     max: [100000, "Quantity seems unrealistic"]
   },
 
@@ -43,12 +43,6 @@ const CropSchema = new mongoose.Schema(
   availableFrom: {
     type: Date,
     required: true,
-    validate: {
-      validator: function (value) {
-        return value >= new Date().setHours(0,0,0,0);
-      },
-      message: "Available date cannot be in the past"
-    }
   },
 
   status: {

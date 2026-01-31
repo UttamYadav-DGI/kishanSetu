@@ -40,9 +40,10 @@ const FarmerDashboard = () => {
   const { user, crops, totalCrops, activeCrops } = dashboard;
 
   const filteredCrops =
-    filter === "all"
-      ? crops
-      : crops.filter((crop) => crop.status === filter);
+  filter === "all"
+    ? crops.filter((crop) => crop.status !== "sold")
+    : crops.filter((crop) => crop.status === filter);
+
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -92,9 +93,16 @@ const FarmerDashboard = () => {
         <h2 className="text-xl font-semibold">
           My Crop Listings
         </h2>
+       
 
         {/* Filters */}
         <div className="flex gap-4 text-sm">
+           <button
+        onClick={() => navigate("/farmers/orders")}
+        className="border px-4 py-2 rounded-lg hover:bg-gray-100"
+      >
+        Orders Received 📦
+      </button>
           <button
             onClick={() => setFilter("all")}
             className={filter === "all" ? "font-bold text-green-600" : ""}

@@ -4,7 +4,7 @@ import { ApiResponse } from "../Utils/ApiResponse.js";
 import { Order } from "../Models/Order.model.js";
 import { Crop } from "../Models/Crop.model.js";
 import { User } from "../Models/User.model.js";
-
+import mongoose from "mongoose";
 // ✅ Place Order (already done)
 const placeOrder = AsyncHandler(async (req, res) => {
   const buyerId = req.user?._id;
@@ -86,27 +86,49 @@ const getMyOrdersFarmer = AsyncHandler(async (req, res) => {
     .json(new ApiResponse(200, orders, "Farmer orders fetched ✅"));
 });
 
-// ✅ Farmer: Accept/Reject Order
 const updateOrderStatus = AsyncHandler(async (req, res) => {
   const farmerId = req.user?._id;
   const { id } = req.params; // orderId
   const { status } = req.body;
 
-  const user = await User.findById(farmerId).select("Role");
-  if (!user || user.Role !== "farmer") {
-    throw new ApiError(403, "Farmer access only");
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new ApiError(400, "Invalid order id");
   }
 
   if (!["confirmed", "rejected", "delivered"].includes(status)) {
-    throw new ApiError(400, "Invalid order status");
+    throw new ApiError(400, "Invalid status");
+  }
+
+  const farmer = await User.findById(farmerId).select("Role");
+  if (!farmer || farmer.Role !== "farmer") {
+    throw new ApiError(403, "Farmer access only");
   }
 
   const order = await Order.findOne({ _id: id, farmerId });
   if (!order) throw new ApiError(404, "Order not found");
 
-  // ✅ Only pending order can be accepted/rejected
+  // ✅ Only pending order can be confirmed/rejected
   if (order.status !== "pending" && status !== "delivered") {
     throw new ApiError(400, `Order already ${order.status}`);
+  }
+
+  // ✅ If farmer confirms order => reduce crop quantity
+  if (status === "confirmed") {
+    const crop = await Crop.findById(order.cropId);
+    if (!crop) throw new ApiError(404, "Crop not found");
+
+    if (crop.quantity < order.quantityKg) {
+      throw new ApiError(400, "Not enough crop quantity available");
+    }
+
+    crop.quantity = crop.quantity - order.quantityKg;
+
+    // ✅ if quantity becomes 0 => mark as sold
+    if (crop.quantity === 0) {
+      crop.status = "sold";
+    }
+
+    await crop.save();
   }
 
   order.status = status;
@@ -116,6 +138,7 @@ const updateOrderStatus = AsyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, order, "Order status updated ✅"));
 });
+
 
 export {
   placeOrder,

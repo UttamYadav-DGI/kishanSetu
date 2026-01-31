@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { setFarmerProfile,getFarmerProfile,getFarmerDashboard } from "../Controllers/Farmer.controller.js";
-import { verifyJWT } from "../MiddleWare/Auth.middleware.js";
+import { verifyJWT } from '../MiddleWare/Auth.middleWare.js'
 const router = Router();
 
 router.use(verifyJWT);
