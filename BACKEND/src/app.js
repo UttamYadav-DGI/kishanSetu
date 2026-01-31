@@ -32,6 +32,11 @@ import BuyerRouter from "./Routers/Buyer.routes.js";
 import OrderRouter from "./Routers/order.routes.js";
 import authRouter from "./Routers/auth.routes.js";
 import adminRoutes from "./Routers/admin.routes.js";
+import orderRoutes from "./Routers/order.routes.js";
+
+
+app.use("/api/v1/orders", orderRoutes);
+
 
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/farmers", farmerRouter);

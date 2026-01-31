@@ -2,41 +2,51 @@ import mongoose from "mongoose";
 
 const orderSchema = new mongoose.Schema(
   {
-    buyer: {
+    buyerId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Buyer",
+      ref: "User",
       required: true,
     },
 
-    crop: {
+    farmerId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Crop",
+      ref: "User",
       required: true,
     },
 
-    farmer: {
+    cropId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Farmer",
+      ref: "crop",
       required: true,
     },
 
-    quantityKg: { type: Number, required: true },
-    pricePerKg: { type: Number, required: true },
-    totalAmount: { type: Number, required: true },
+    quantityKg: {
+      type: Number,
+      required: true,
+      min: [1, "Minimum quantity must be 1 kg"],
+    },
+
+    pricePerKg: {
+      type: Number,
+      required: true,
+    },
+
+    totalPrice: {
+      type: Number,
+      required: true,
+    },
+
+    deliveryAddress: {
+      type: String,
+      required: true,
+      trim: true,
+    },
 
     status: {
       type: String,
-      enum: ["PLACED", "CONFIRMED", "DELIVERED", "CANCELLED"],
-      default: "PLACED",
+      enum: ["pending", "confirmed", "rejected", "delivered"],
+      default: "pending",
     },
-
-    paymentStatus: {
-      type: String,
-      enum: ["PENDING", "PAID"],
-      default: "PENDING",
-    },
-
-    deliveryAddress: { type: String, required: true },
   },
   { timestamps: true }
 );

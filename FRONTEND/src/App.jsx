@@ -24,6 +24,13 @@ import AdminUsers from "./pages/admin/AdminUsers.jsx";
 import AdminCrops from "./pages/admin/AdminCrops.jsx";
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import AdminFarmers from "./pages/admin/AdminFarmers.jsx";
+import PlaceOrder from "./pages/buyer/PlaceOrder.jsx";
+import MyOrders from "./pages/buyer/MyOrder.jsx";
+import FarmerOrders from "./pages/farmer/FarmerOrders.jsx";
+
+
+
+
 export default function App() {
   const [chatLang, setChatLang] = useState("hi");
 
@@ -47,6 +54,11 @@ export default function App() {
       <Route path="/admin/users" element={<AdminProtectedRoute> <AdminUsers /> </AdminProtectedRoute>} />
       <Route path="/admin/crops" element={<AdminProtectedRoute> <AdminCrops/> </AdminProtectedRoute>} />
       <Route path="/admin/farmers" element={<AdminProtectedRoute>  <AdminFarmers /> </AdminProtectedRoute>}/>
+
+
+      <Route path="/buyers/order/:id" element={<PlaceOrder />} />
+      <Route path="/buyers/orders" element={<MyOrders />} />
+      <Route path="/farmers/orders" element={<FarmerOrders />} />
 
       <Route path="/login" element={<Login />}></Route>
       <Route path="/contact" element={<Contact />}></Route>

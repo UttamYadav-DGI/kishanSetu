@@ -4,7 +4,7 @@ import { Crop } from "../Models/Crop.model.js";
 import { ApiError } from "../Utils/ApiError.js";
 import { ApiResponse } from "../Utils/ApiResponse.js";
 import { AsyncHandler } from "../Utils/AsyncHandler.js";
-
+import { Order } from "../Models/Order.model.js";
 /**
  * ✅ Create/Update Buyer Profile
  * Only Role === "buyer" can access
@@ -71,31 +71,43 @@ const getBuyerProfile = AsyncHandler(async (req, res) => {
  * ✅ Buyer Dashboard
  * Shows buyer info + some marketplace stats
  */
+
 const getBuyerDashboard = AsyncHandler(async (req, res) => {
   const userId = req.user?._id;
 
   if (!userId) throw new ApiError(401, "Unauthorized access");
 
-  const user = await User.findById(userId).select("Name Role Avatar");
-
+  const user = await User.findById(userId).select("Name Role");
   if (!user || user.Role !== "buyer") {
     throw new ApiError(403, "Buyer access only");
   }
 
-  const buyerProfile = await Buyer.findOne({ userId });
+  // ✅ total available crops
+  const totalAvailableCrops = await Crop.countDocuments({
+    status: "available",
+  });
 
-  // Marketplace Stats
-  const totalAvailableCrops = await Crop.countDocuments({ status: "available" });
+  // ✅ total orders by buyer
+  const totalOrders = await Order.countDocuments({
+    buyerId: userId,
+  });
+
+  // ✅ pending orders
+  const pendingOrders = await Order.countDocuments({
+    buyerId: userId,
+    status: "pending",
+  });
 
   return res.status(200).json(
     new ApiResponse(
       200,
       {
         user,
-        buyerProfile,
-        totalAvailableCrops
+        totalAvailableCrops,
+        totalOrders,
+        pendingOrders,
       },
-      "Buyer dashboard fetched successfully"
+      "Buyer dashboard fetched successfully ✅"
     )
   );
 });

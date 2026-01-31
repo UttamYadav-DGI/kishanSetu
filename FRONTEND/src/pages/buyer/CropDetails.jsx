@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getCropDetailsForBuyer } from "../../Services/buyerApi.js";
+import { useNavigate } from "react-router-dom";
 
 const CropDetails = () => {
   const { id } = useParams();
   const [crop, setCrop] = useState(null);
+
+  const navigate=useNavigate();
 
   useEffect(() => {
     fetchCrop();
@@ -30,9 +33,13 @@ const CropDetails = () => {
         <p className="text-sm mt-2">Quantity: {crop.quantity} kg</p>
         <p className="text-sm mt-2">Status: {crop.status}</p>
 
-        <button className="mt-5 w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700">
-          Place Order (Next Step)
-        </button>
+        <button
+        onClick={() => navigate(`/buyers/order/${crop._id}`)}
+        className="mt-5 w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700"
+      >
+        Place Order
+      </button>
+
       </div>
     </div>
   );

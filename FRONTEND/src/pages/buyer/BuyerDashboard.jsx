@@ -27,23 +27,36 @@ const BuyerDashboard = () => {
     <div className="p-6 bg-gray-50 min-h-screen">
       <BuyerHeader name={dashboard.user?.Name || "Buyer"} />
 
-      <BuyerStats totalAvailableCrops={dashboard.totalAvailableCrops} />
+      <BuyerStats
+      totalAvailableCrops={dashboard.totalAvailableCrops}
+      totalOrders={dashboard.totalOrders}
+      pendingOrders={dashboard.pendingOrders}
+    />
 
-      <div className="mt-8 flex gap-3">
-        <button
-          onClick={() => navigate("/buyers/marketplace")}
-          className="bg-green-600 text-white px-5 py-2 rounded-lg hover:bg-green-700"
-        >
-          Browse Marketplace
-        </button>
 
-        <button
-          onClick={() => navigate("/buyers/profile")}
-          className="border border-gray-400 px-5 py-2 rounded-lg hover:bg-gray-100"
-        >
-          Edit Profile
-        </button>
-      </div>
+      <div className="mt-8 flex gap-3 flex-wrap">
+  <button
+    onClick={() => navigate("/buyers/marketplace")}
+    className="bg-green-600 text-white px-5 py-2 rounded-lg hover:bg-green-700"
+  >
+    Browse Marketplace
+  </button>
+
+  <button
+    onClick={() => navigate("/buyers/orders")}
+    className="border border-gray-400 px-5 py-2 rounded-lg hover:bg-gray-100"
+  >
+    My Orders
+  </button>
+
+  <button
+    onClick={() => navigate("/buyers/profile")}
+    className="border border-gray-400 px-5 py-2 rounded-lg hover:bg-gray-100"
+  >
+    Edit Profile
+  </button>
+</div>
+
     </div>
   );
 };

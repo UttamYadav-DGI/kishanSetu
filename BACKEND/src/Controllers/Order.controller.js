@@ -1,66 +1,125 @@
-import { Crop } from "../Models/Crop.model.js";
-import { Order } from "../Models/Order.model.js";
+import { AsyncHandler } from "../Utils/AsyncHandler.js";
 import { ApiError } from "../Utils/ApiError.js";
 import { ApiResponse } from "../Utils/ApiResponse.js";
-import { AsyncHandler } from "../Utils/AsyncHandler.js";
+import { Order } from "../Models/Order.model.js";
+import { Crop } from "../Models/Crop.model.js";
+import { User } from "../Models/User.model.js";
 
-export const buyCrop = AsyncHandler(async (req, res) => {
-  const buyerId = req.user._id;
+// ✅ Place Order (already done)
+const placeOrder = AsyncHandler(async (req, res) => {
+  const buyerId = req.user?._id;
+
   const { cropId, quantityKg, deliveryAddress } = req.body;
 
   if (!cropId || !quantityKg || !deliveryAddress) {
-    throw new ApiError(400, "cropId, quantityKg and deliveryAddress are required");
+    throw new ApiError(400, "All fields are required");
+  }
+
+  const buyer = await User.findById(buyerId).select("Role");
+  if (!buyer || buyer.Role !== "buyer") {
+    throw new ApiError(403, "Buyer access only");
   }
 
   const crop = await Crop.findById(cropId);
   if (!crop) throw new ApiError(404, "Crop not found");
 
-  if (!crop.isActive) throw new ApiError(400, "Crop is not active");
-
-  if (quantityKg <= 0) throw new ApiError(400, "Quantity must be greater than 0");
-
-  if (crop.availableQtyKg < quantityKg) {
-    throw new ApiError(400, "Not enough crop quantity available");
+  if (crop.status !== "available") {
+    throw new ApiError(400, "Crop is not available");
   }
 
-  // ✅ Calculate total
-  const totalAmount = quantityKg * crop.pricePerKg;
+  if (Number(quantityKg) > crop.quantity) {
+    throw new ApiError(400, `Only ${crop.quantity} kg available`);
+  }
 
-  // ✅ Create order (receipt base)
+  const totalPrice = Number(quantityKg) * crop.pricePerKg;
+
   const order = await Order.create({
-    buyer: buyerId,
-    crop: crop._id,
-    farmer: crop.farmer,
+    buyerId,
+    farmerId: crop.farmerId,
+    cropId,
     quantityKg,
     pricePerKg: crop.pricePerKg,
-    totalAmount,
+    totalPrice,
     deliveryAddress,
   });
-
-  // ✅ Reduce crop stock
-  crop.availableQtyKg -= quantityKg;
-
-  // if crop finished
-  if (crop.availableQtyKg === 0) {
-    crop.isActive = false;
-  }
-
-  await crop.save();
 
   return res
     .status(201)
     .json(new ApiResponse(201, order, "Order placed successfully ✅"));
 });
 
-export const getMyOrders = AsyncHandler(async (req, res) => {
-  const buyerId = req.user._id;
+// ✅ Buyer: My Orders
+const getMyOrdersBuyer = AsyncHandler(async (req, res) => {
+  const buyerId = req.user?._id;
 
-  const orders = await Order.find({ buyer: buyerId })
-    .sort({ createdAt: -1 })
-    .populate("crop", "name pricePerKg location")
-    .select("quantityKg totalAmount status paymentStatus createdAt");
+  const user = await User.findById(buyerId).select("Role");
+  if (!user || user.Role !== "buyer") {
+    throw new ApiError(403, "Buyer access only");
+  }
+
+  const orders = await Order.find({ buyerId })
+    .populate("cropId", "cropName pricePerKg location status")
+    .populate("farmerId", "Name PhoneNo EmailId")
+    .sort({ createdAt: -1 });
 
   return res
     .status(200)
-    .json(new ApiResponse(200, orders, "My orders fetched successfully ✅"));
+    .json(new ApiResponse(200, orders, "Buyer orders fetched ✅"));
 });
+
+// ✅ Farmer: Orders on my crops
+const getMyOrdersFarmer = AsyncHandler(async (req, res) => {
+  const farmerId = req.user?._id;
+
+  const user = await User.findById(farmerId).select("Role");
+  if (!user || user.Role !== "farmer") {
+    throw new ApiError(403, "Farmer access only");
+  }
+
+  const orders = await Order.find({ farmerId })
+    .populate("cropId", "cropName pricePerKg location status")
+    .populate("buyerId", "Name PhoneNo EmailId Address")
+    .sort({ createdAt: -1 });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, orders, "Farmer orders fetched ✅"));
+});
+
+// ✅ Farmer: Accept/Reject Order
+const updateOrderStatus = AsyncHandler(async (req, res) => {
+  const farmerId = req.user?._id;
+  const { id } = req.params; // orderId
+  const { status } = req.body;
+
+  const user = await User.findById(farmerId).select("Role");
+  if (!user || user.Role !== "farmer") {
+    throw new ApiError(403, "Farmer access only");
+  }
+
+  if (!["confirmed", "rejected", "delivered"].includes(status)) {
+    throw new ApiError(400, "Invalid order status");
+  }
+
+  const order = await Order.findOne({ _id: id, farmerId });
+  if (!order) throw new ApiError(404, "Order not found");
+
+  // ✅ Only pending order can be accepted/rejected
+  if (order.status !== "pending" && status !== "delivered") {
+    throw new ApiError(400, `Order already ${order.status}`);
+  }
+
+  order.status = status;
+  await order.save();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, order, "Order status updated ✅"));
+});
+
+export {
+  placeOrder,
+  getMyOrdersBuyer,
+  getMyOrdersFarmer,
+  updateOrderStatus,
+};
