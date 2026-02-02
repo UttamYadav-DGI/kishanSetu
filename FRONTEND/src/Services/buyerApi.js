@@ -7,7 +7,7 @@ export const setBuyerProfile = (payload) =>
 export const getBuyerProfile = () =>
   api.get("/api/v1/buyers/profile", { withCredentials: true });
 
-// ✅ Dashboard. 
+// ✅ Dashboard
 export const getBuyerDashboard = () =>
   api.get("/api/v1/buyers/dashboard", { withCredentials: true });
 
@@ -18,5 +18,10 @@ export const getMarketplaceCrops = (params) =>
     params,
   });
 
+// ✅ Crop Details
 export const getCropDetailsForBuyer = (id) =>
   api.get(`/api/v1/buyers/marketplace/${id}`, { withCredentials: true });
+
+// ✅ Place Order ✅ (IMPORTANT)
+export const placeOrder = (payload) =>
+  api.post("/api/v1/order/place", payload, { withCredentials: true });

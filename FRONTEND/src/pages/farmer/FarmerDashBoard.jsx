@@ -82,10 +82,8 @@ const FarmerDashboard = () => {
           title="Crops Sold"
           value={totalCrops - activeCrops}
         />
-        <DashboardCard
-          title="Earnings"
-          value="₹ --"
-        />
+       <DashboardCard title="Earnings" value={`₹ ${dashboard.earnings}`} />
+
       </div>
 
       {/* 🌱 Crop Listings Header */}

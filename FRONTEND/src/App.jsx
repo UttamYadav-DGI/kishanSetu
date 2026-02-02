@@ -24,9 +24,11 @@ import AdminUsers from "./pages/admin/AdminUsers.jsx";
 import AdminCrops from "./pages/admin/AdminCrops.jsx";
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import AdminFarmers from "./pages/admin/AdminFarmers.jsx";
-import PlaceOrder from "./pages/buyer/PlaceOrder.jsx";
+// import PlaceOrder from "./pages/buyer/PlaceOrder.jsx";
 import MyOrders from "./pages/buyer/MyOrder.jsx";
 import FarmerOrders from "./pages/farmer/FarmerOrders.jsx";
+import FarmerTransactions from "./pages/farmer/farmerTransaction.jsx";
+
 
 
 
@@ -44,6 +46,8 @@ export default function App() {
       <Route path="/farmers/profile" element={<FarmerProfile/>}></Route>
       <Route path="/farmers/edit-crop/:id" element={<EditCrop/>} ></Route>
       <Route path="/farmers/add-crop" element={<AddCrop/>} ></Route>
+      <Route path="/farmers/transactions" element={<FarmerTransactions />} />
+
 
       <Route path="/buyers/dashboard" element={<BuyerProtectedRoute> <BuyerDashboard/> </BuyerProtectedRoute>} />
       <Route path="/buyers/marketplace" element={<BuyerProtectedRoute> <Marketplace/> </BuyerProtectedRoute>} />
@@ -56,7 +60,7 @@ export default function App() {
       <Route path="/admin/farmers" element={<AdminProtectedRoute>  <AdminFarmers /> </AdminProtectedRoute>}/>
 
 
-      <Route path="/buyers/order/:id" element={<PlaceOrder />} />
+      {/* <Route path="/buyers/order/:id" element={<PlaceOrder />} /> */}
       <Route path="/buyers/orders" element={<MyOrders />} />
       <Route path="/farmers/orders" element={<FarmerOrders />} />
 
