@@ -27,7 +27,7 @@ import AdminFarmers from "./pages/admin/AdminFarmers.jsx";
 // import PlaceOrder from "./pages/buyer/PlaceOrder.jsx";
 import MyOrders from "./pages/buyer/MyOrder.jsx";
 import FarmerOrders from "./pages/farmer/FarmerOrders.jsx";
-import FarmerTransactions from "./pages/farmer/farmerTransaction.jsx";
+import FarmerTransactions from "./pages/farmer/FarmerTransaction.jsx";
 
 
 
