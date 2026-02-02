@@ -33,9 +33,13 @@ import OrderRouter from "./Routers/order.routes.js";
 import authRouter from "./Routers/auth.routes.js";
 import adminRoutes from "./Routers/admin.routes.js";
 import orderRoutes from "./Routers/order.routes.js";
+import transactionRoutes from "./Routers/transaction.routes.js";
+import paymentRoutes from "./Routers/payment.routes.js";
 
 
 app.use("/api/v1/orders", orderRoutes);
+app.use("/api/v1/transactions", transactionRoutes);
+app.use("/api/v1/payments", paymentRoutes);
 
 
 app.use("/api/v1/users", userRouter);

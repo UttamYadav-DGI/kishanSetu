@@ -4,7 +4,7 @@ import { ApiError } from "../Utils/ApiError.js";
 import { ApiResponse } from "../Utils/ApiResponse.js";
 import { AsyncHandler } from "../Utils/AsyncHandler.js";
 import { Crop } from "../Models/Crop.model.js";
-
+import { Order } from "../Models/Order.model.js";
 const setFarmerProfile = AsyncHandler(async (req, res) => {
   const userId = req.user?._id;
 
@@ -85,6 +85,11 @@ const getFarmerDashboard = AsyncHandler(async (req, res) => {
     (crop) => crop.status === "available"
   ).length;
 
+  const deliveredOrders = await Order.find({ farmerId: userId, status: "delivered" });
+
+const earnings = deliveredOrders.reduce((sum, o) => sum + (o.totalPrice || 0), 0);
+
+
   // 5️⃣ Send response (MATCHES FRONTEND)
   return res.status(200).json(
     new ApiResponse(
@@ -94,7 +99,9 @@ const getFarmerDashboard = AsyncHandler(async (req, res) => {
         farmerProfile,
         totalCrops,
         activeCrops,
-        crops
+        crops,
+        earnings
+
       },
       "Farmer dashboard fetched successfully"
     )
