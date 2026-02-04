@@ -29,7 +29,8 @@ import MyOrders from "./pages/buyer/MyOrder.jsx";
 import FarmerOrders from "./pages/farmer/FarmerOrders.jsx";
 import FarmerTransactions from "./pages/farmer/FarmerTransaction.jsx";
 
-
+import ForgotPassword from "./component/ForgetPassword.jsx";
+import ResetPassword from "./component/ResetPassword.jsx";
 
 
 
@@ -63,6 +64,10 @@ export default function App() {
       {/* <Route path="/buyers/order/:id" element={<PlaceOrder />} /> */}
       <Route path="/buyers/orders" element={<MyOrders />} />
       <Route path="/farmers/orders" element={<FarmerOrders />} />
+
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password/:token" element={<ResetPassword />} />
+
 
       <Route path="/login" element={<Login />}></Route>
       <Route path="/contact" element={<Contact />}></Route>
