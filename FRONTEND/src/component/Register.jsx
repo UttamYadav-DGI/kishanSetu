@@ -1,58 +1,78 @@
-import { useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import api from "../Services/Api";
 
 export default function Register() {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const initialRole = location.state?.role || "farmer";
 
   const [formData, setFormData] = useState({
     Name: "",
     PhoneNo: "",
     EmailId: "",
     Password: "",
-    Address:"",
-    Role:"farmer",
-    avatar: null, // optional image
+    Address: "",
+    Role: initialRole,
+    avatar: null,
   });
 
+  const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  // Handle text inputs
+  useEffect(() => {
+    if (location.state?.role) {
+      setFormData((prev) => ({ ...prev, Role: location.state.role }));
+    }
+  }, [location.state?.role]);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Handle image input
   const handleFileChange = (e) => {
-    setFormData({ ...formData, avatar: e.target.files[0] });
+    const file = e.target.files[0];
+    if (file) {
+      setFormData({ ...formData, avatar: file });
+      setPreview(URL.createObjectURL(file));
+    }
   };
-// };
-    // Basic validation
-    const validateForm=()=>{
 
-    if (!formData.Name || !formData.PhoneNo || !formData.EmailId || !formData.Password) {
-      return "All fields except image are mandatory";
-    }
-    if (!/^[0-9]{10}$/.test(formData.PhoneNo)) {
-      return "Phone number must be exactly 10 digit character not allowed";
+  // ✅ ENHANCED VALIDATION LOGIC
+  const validateForm = () => {
+    const { Name, PhoneNo, EmailId, Password, Address } = formData;
+
+    if (!Name || !PhoneNo || !EmailId || !Password || !Address) {
+      return "All fields are mandatory.";
     }
 
-    if (!/^\S+@\S+\.\S+$/.test(formData.EmailId)) {
-      return "Invalid email address";
+    // Rule: Name must not contain numbers or special characters
+    const nameRegex = /^[a-zA-Z\s]+$/;
+    if (!nameRegex.test(Name)) {
+      return "Name should only contain letters and spaces (No numbers allowed).";
     }
 
-    if (formData.Password.length < 6) {
-      return "Password must be at least 6 characters";
+    // Rule: Phone number must be exactly 10 digits
+    if (!/^[0-9]{10}$/.test(PhoneNo)) {
+      return "Phone number must be exactly 10 digits.";
+    }
+
+    // Rule: Valid Email
+    if (!/^\S+@\S+\.\S+$/.test(EmailId)) {
+      return "Please enter a valid email address.";
+    }
+
+    // Rule: Password must be at least 8 characters
+    if (Password.length < 8) {
+      return "Password must be at least 8 characters long.";
     }
 
     return null;
-    };
-   
+  };
 
-  //submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -64,158 +84,140 @@ export default function Register() {
       return;
     }
 
-
     try {
       setLoading(true);
-
-      // IMPORTANT: multipart/form-data
       const data = new FormData();
-      data.append("Name", formData.Name);
-      data.append("PhoneNo", formData.PhoneNo);
-      data.append("EmailId", formData.EmailId);
-      data.append("Role",formData.Role);
-      data.append("Address",formData.Address);
-      data.append("Password", formData.Password);
-
-      if (formData.avatar) {
-        data.append("avatar", formData.avatar);
-      }
-
-      const response = await api.post(
-        "/api/v1/users/register",
-        data,
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      setSuccess("Registration successful!");
-      console.log("Response:", response.data);
-
-      // Optional: reset form
-      setFormData({
-        Name: "",
-        PhoneNo: "",
-        EmailId: "",
-        Role:"",
-        Password: "",
-        avatar: null,
+      Object.keys(formData).forEach((key) => {
+        data.append(key, formData[key]);
       });
 
-    } catch (err) {
-  const message = err.response?.data?.message;
-    alert(message)
-    setError(message);
-  }
-  finally{
-    setLoading(false);
-  }
+      await api.post("/api/v1/users/register", data, {
+        withCredentials: true,
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
+      setSuccess("Registration successful! Redirecting...");
+      setTimeout(() => navigate("/login"), 2000);
+
+    } catch (err) {
+      setError(err.response?.data?.message || "Registration failed.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-green-50">
-      <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md">
-        <h2 className="text-2xl font-bold text-green-700 mb-6 text-center">
-          KishanSetu Register
-        </h2>
+    <div className="flex items-center justify-center min-h-screen bg-green-50 px-4 py-10">
+      <div className="bg-white shadow-2xl rounded-3xl p-8 w-full max-w-lg border border-green-100">
+        <div className="text-center mb-6">
+          <h2 className="text-3xl font-extrabold text-green-700">KishanSetu</h2>
+          <p className="text-gray-500">Create your <span className="text-green-600 font-bold uppercase">{formData.Role}</span> account</p>
+        </div>
 
-        {error && (
-          <div className="mb-4 p-2 text-sm text-red-600 bg-red-100 rounded-md">
-            {error}
-          </div>
-        )}
-        {success && (
-          <div className="mb-4 p-2 text-sm text-green-600 bg-green-100 rounded-md">
-            {success}
-          </div>
-        )}
+        {error && <div className="mb-4 p-3 text-sm text-red-700 bg-red-50 border-l-4 border-red-500 rounded font-medium">{error}</div>}
+        {success && <div className="mb-4 p-3 text-sm text-green-700 bg-green-50 border-l-4 border-green-500 rounded font-medium">{success}</div>}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="text"
-            name="Name"
-            placeholder="Full Name"
-            value={formData.Name}
-            onChange={handleChange}
-            className="w-full border p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
-          />
+          
+          {/* Name Input */}
+          <div>
+            <input
+              type="text"
+              name="Name"
+              placeholder="Full Name"
+              value={formData.Name}
+              onChange={handleChange}
+              className="w-full border-2 border-gray-100 p-3 rounded-xl focus:border-green-400 outline-none transition"
+            />
+            <p className="text-[10px] text-gray-400 ml-2 mt-1">* Only letters allowed, no numbers.</p>
+          </div>
 
-          <input
-            type="text"
-            name="PhoneNo"
-            placeholder="Phone Number"
-            value={formData.PhoneNo}
-            onChange={handleChange}
-            maxLength={10}
-            className="w-full border p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
-          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Phone Input */}
+            <div>
+              <input
+                type="text"
+                name="PhoneNo"
+                placeholder="Phone Number"
+                value={formData.PhoneNo}
+                onChange={handleChange}
+                maxLength={10}
+                className="w-full border-2 border-gray-100 p-3 rounded-xl focus:border-green-400 outline-none transition"
+              />
+              <p className="text-[10px] text-gray-400 ml-2 mt-1">* Exactly 10 digits.</p>
+            </div>
+
+            {/* Role Select (Read-only styled) */}
+            <div>
+                <select
+                name="Role"
+                value={formData.Role}
+                onChange={handleChange}
+                className="w-full border-2 border-gray-100 p-3 rounded-xl focus:border-green-400 outline-none bg-white transition"
+                >
+                <option value="farmer">Farmer</option>
+                <option value="buyer">Buyer</option>
+                <option value="admin">Admin</option>
+                </select>
+            </div>
+          </div>
 
           <input
             type="email"
             name="EmailId"
-            placeholder="Email ID"
+            placeholder="Email Address"
             value={formData.EmailId}
             onChange={handleChange}
-            className="w-full border p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
+            className="w-full border-2 border-gray-100 p-3 rounded-xl focus:border-green-400 outline-none transition"
           />
-          <select
-          name="Role"
-          value={formData.Role}
-          onChange={handleChange}
-          className="w-full border p-2 rounded-lg focus:ring-2 focus:ring-green-400"
-          >
-          <option value="farmer">Farmer</option>
-          <option value="buyer">Buyer</option>
-          <option value="admin">Admin</option>
-        </select>
 
-         <input
+          <input
             type="text"
             name="Address"
-            placeholder="Address"
+            placeholder="Full Address (Village/City, State)"
             value={formData.Address}
             onChange={handleChange}
-            className="w-full border p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
+            className="w-full border-2 border-gray-100 p-3 rounded-xl focus:border-green-400 outline-none transition"
           />
 
-          <input
-            type="password"
-            name="Password"
-            placeholder="Password"
-            value={formData.Password}
-            onChange={handleChange}
-            className="w-full border p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
-          />
+          {/* Password Input */}
+          <div>
+            <input
+              type="password"
+              name="Password"
+              placeholder="Create Password"
+              value={formData.Password}
+              onChange={handleChange}
+              className="w-full border-2 border-gray-100 p-3 rounded-xl focus:border-green-400 outline-none transition"
+            />
+            <p className="text-[10px] text-gray-400 ml-2 mt-1">* Minimum 8 characters required.</p>
+          </div>
 
-          {/* Optional Image */}
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            className="w-full border p-2 rounded-lg"
-          />
+          {/* Profile Picture */}
+          <div className="flex items-center space-x-4 p-3 border-2 border-dashed border-gray-100 rounded-xl bg-gray-50">
+            <div className="w-14 h-14 bg-white rounded-full overflow-hidden flex-shrink-0 border-2 border-green-200">
+              {preview ? <img src={preview} alt="Preview" className="w-full h-full object-cover" /> : <div className="flex items-center justify-center h-full text-[10px] text-gray-400">No Image</div>}
+            </div>
+            <div className="flex-1">
+              <label className="block text-xs font-bold text-gray-600 mb-1">Profile Photo (Optional)</label>
+              <input type="file" accept="image/*" onChange={handleFileChange} className="text-xs text-gray-500 file:mr-3 file:py-1 file:px-3 file:rounded-full file:border-0 file:bg-green-600 file:text-white cursor-pointer" />
+            </div>
+          </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition disabled:opacity-50"
+            className="w-full bg-green-600 text-white py-3 rounded-xl font-bold text-lg hover:bg-green-700 transition-all shadow-lg shadow-green-200 disabled:opacity-50"
           >
-            {loading ? "Registering..." : "Register"}
+            {loading ? "Verifying..." : "Register Now"}
           </button>
 
-          <button
-            type="button"
-            onClick={() => navigate("/login")}
-            className="w-full text-green-700 underline mt-2"
-          >
-           Have an Account? SignIn
-          </button>
+          <p className="text-center text-sm text-gray-600 mt-4">
+            Already have an account?{" "}
+            <button type="button" onClick={() => navigate("/login")} className="text-green-700 font-bold hover:underline">Sign In</button>
+          </p>
         </form>
       </div>
     </div>
   );
-};
+}
