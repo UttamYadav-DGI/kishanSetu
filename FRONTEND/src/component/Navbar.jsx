@@ -14,6 +14,9 @@ const Navbar = ({ setChatLang }) => {
   const [showRoleModal, setShowRoleModal] = useState(false);
   const [role, setRole] = useState("");
 
+  // ✅ Role from backend (supports Role or role)
+  const userRole = user?.Role || user?.role;
+
   // Language mapping
   const languages = [
     { name: "English", code: "en", display: "English" },
@@ -49,17 +52,14 @@ const Navbar = ({ setChatLang }) => {
     setShowRoleModal(false);
     setIsMenuOpen(null);
 
-    // ✅ One login page only
-    // You can access this role in Login.jsx using: const location = useLocation();
-    // location.state?.role
     navigate("/login", { state: { role } });
   };
 
   // ✅ Dashboard redirect based on logged-in user role
   const goToDashboard = () => {
-    if (user?.role === "farmer") navigate("/farmers/dashboard");
-    else if (user?.role === "buyer") navigate("/buyers/dashboard");
-    else if (user?.role === "admin") navigate("/admin/dashboard");
+    if (userRole === "farmer") navigate("/farmers/dashboard");
+    else if (userRole === "buyer") navigate("/buyers/dashboard");
+    else if (userRole === "admin") navigate("/admin/dashboard");
     else navigate("/");
   };
 
@@ -67,7 +67,10 @@ const Navbar = ({ setChatLang }) => {
     <nav className="bg-white shadow-md w-full z-50">
       <div className="container mx-auto px-4 flex justify-between items-center h-16">
         {/* Logo */}
-        <div className="text-2xl font-bold text-green-700">
+        <div
+          className="text-2xl font-bold text-green-700 cursor-pointer"
+          onClick={() => navigate("/")}
+        >
           {t("navbar.logo")}
         </div>
 
@@ -221,7 +224,10 @@ const Navbar = ({ setChatLang }) => {
             </button>
           ) : (
             <button
-              onClick={goToDashboard}
+              onClick={() => {
+                setIsMenuOpen(null);
+                goToDashboard();
+              }}
               className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-2 rounded-lg"
             >
               Dashboard
