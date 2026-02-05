@@ -36,18 +36,20 @@ const forgotPassword = AsyncHandler(async (req, res) => {
 
   // ✅ nodemailer config (basic)
   const transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
     },
   });
 
-  try {
+try {
     await transporter.sendMail({
-      from: process.env.EMAIL_USER,
+      from: `"KishanSetu Support" <${process.env.EMAIL_USER}>`,
       to: user.EmailId,
-      subject: "Password Reset - KishanSetu",
+      subject: "Reset Your Password - KishanSetu",
       text: message,
     });
 
@@ -55,7 +57,6 @@ const forgotPassword = AsyncHandler(async (req, res) => {
       .status(200)
       .json(new ApiResponse(200, {}, "Reset link sent to email ✅"));
   } catch (error) {
-    // ✅ clear token if mail fails
     user.ResetPasswordToken = undefined;
     user.ResetPasswordExpire = undefined;
     await user.save({ validateBeforeSave: false });
