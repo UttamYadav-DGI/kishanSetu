@@ -6,6 +6,19 @@ import { ApiError } from "../Utils/ApiError.js";
 import { ApiResponse } from "../Utils/ApiResponse.js";
 
 /* =========================================================
+   BREVO SMTP TRANSPORTER (REUSABLE)
+========================================================= */
+const transporter = nodemailer.createTransport({
+  host: process.env.BREVO_SMTP_HOST,
+  port: Number(process.env.BREVO_SMTP_PORT),
+  secure: false, // TLS
+  auth: {
+    user: process.env.BREVO_SMTP_USER,
+    pass: process.env.BREVO_SMTP_PASS,
+  },
+});
+
+/* =========================================================
    FORGOT PASSWORD
 ========================================================= */
 const forgotPassword = AsyncHandler(async (req, res) => {
@@ -29,40 +42,31 @@ const forgotPassword = AsyncHandler(async (req, res) => {
   // Save hashed token + expiry
   await user.save({ validateBeforeSave: false });
 
-  // 🔗 Frontend reset URL
+  // 🔗 Reset URL
   const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
 
-  // 📩 Email body
   const message = `
 Hello ${user.Name},
 
 You requested to reset your KishanSetu account password.
 
-Click the link below to reset your password:
+Reset your password using the link below:
 ${resetUrl}
 
 This link will expire in 10 minutes.
 
 If you did not request this, please ignore this email.
 
-Thanks,
-KishanSetu Support Team
+— KishanSetu Support Team
 `;
 
-  // 📬 Nodemailer (Gmail SMTP)
-  const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false,
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS, // app password (NO SPACES)
-    },
-  });
-
   try {
+    // ✅ Verify SMTP connection
+    await transporter.verify();
+
+    // ✅ Send mail
     await transporter.sendMail({
-      from: `"KishanSetu Support" <${process.env.EMAIL_USER}>`,
+      from: process.env.EMAIL_FROM,
       to: user.EmailId,
       subject: "Reset Your Password - KishanSetu",
       text: message,
@@ -72,12 +76,12 @@ KishanSetu Support Team
       new ApiResponse(200, {}, "Reset password link sent to email ✅")
     );
   } catch (error) {
+    console.error("EMAIL ERROR:", error);
+
     // ❌ Cleanup if email fails
     user.ResetPasswordToken = undefined;
     user.ResetPasswordExpire = undefined;
     await user.save({ validateBeforeSave: false });
-
-    console.error("EMAIL ERROR:", error);
 
     throw new ApiError(500, "Email sending failed");
   }
@@ -98,7 +102,7 @@ const resetPassword = AsyncHandler(async (req, res) => {
     throw new ApiError(400, "Passwords do not match");
   }
 
-  // 🔐 Hash incoming token
+  // 🔐 Hash token
   const hashedToken = crypto
     .createHash("sha256")
     .update(token)
@@ -120,7 +124,7 @@ const resetPassword = AsyncHandler(async (req, res) => {
   user.ResetPasswordToken = undefined;
   user.ResetPasswordExpire = undefined;
 
-  await user.save();
+  await user.save({ validateBeforeSave: false });
 
   return res.status(200).json(
     new ApiResponse(200, {}, "Password reset successful ✅")
@@ -128,7 +132,7 @@ const resetPassword = AsyncHandler(async (req, res) => {
 });
 
 /* =========================================================
-   GET CURRENT USER (OPTIONAL)
+   GET CURRENT USER
 ========================================================= */
 const getCurrentUser = AsyncHandler(async (req, res) => {
   return res.status(200).json(
