@@ -44,7 +44,7 @@ const forgotPassword = AsyncHandler(async (req, res) => {
 
   // 🔗 Reset URL
   const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
-
+console.log("rese",resetUrl)
   const message = `
 Hello ${user.Name},
 
