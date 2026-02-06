@@ -1,22 +1,20 @@
 import crypto from "crypto";
-import nodemailer from "nodemailer";
+import SibApiV3Sdk from "sib-api-v3-sdk";
 import { User } from "../Models/User.model.js";
 import { AsyncHandler } from "../Utils/AsyncHandler.js";
 import { ApiError } from "../Utils/ApiError.js";
 import { ApiResponse } from "../Utils/ApiResponse.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 /* =========================================================
-   BREVO SMTP TRANSPORTER (REUSABLE)
+   BREVO EMAIL CLIENT (API — NOT SMTP)
 ========================================================= */
-const transporter = nodemailer.createTransport({
-  host: process.env.BREVO_SMTP_HOST,
-  port: Number(process.env.BREVO_SMTP_PORT),
-  secure: false, // TLS
-  auth: {
-    user: process.env.BREVO_SMTP_USER,
-    pass: process.env.BREVO_SMTP_PASS,
-  },
-});
+const client = SibApiV3Sdk.ApiClient.instance;
+client.authentications["api-key"].apiKey = process.env.BREVO_API_KEY;
+
+const emailApi = new SibApiV3Sdk.TransactionalEmailsApi();
+console.log(process.env.BREVO_API_KEY);
 
 /* =========================================================
    FORGOT PASSWORD
@@ -36,15 +34,13 @@ const forgotPassword = AsyncHandler(async (req, res) => {
     throw new ApiError(404, "User not found");
   }
 
-  // 🔐 Generate reset token (raw)
+  // 🔐 Generate reset token
   const resetToken = user.generatePasswordResetToken();
-
-  // Save hashed token + expiry
   await user.save({ validateBeforeSave: false });
 
   // 🔗 Reset URL
   const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
-console.log("rese",resetUrl)
+
   const message = `
 Hello ${user.Name},
 
@@ -61,15 +57,14 @@ If you did not request this, please ignore this email.
 `;
 
   try {
-    // ✅ Verify SMTP connection
-    await transporter.verify();
-
-    // ✅ Send mail
-    await transporter.sendMail({
-      from: process.env.EMAIL_FROM,
-      to: user.EmailId,
+    await emailApi.sendTransacEmail({
+      sender: {
+        email: "kishansetu.care@gmail.com",
+        name: "KishanSetu Support",
+      },
+      to: [{ email: user.EmailId }],
       subject: "Reset Your Password - KishanSetu",
-      text: message,
+      textContent: message,
     });
 
     return res.status(200).json(
@@ -78,7 +73,6 @@ If you did not request this, please ignore this email.
   } catch (error) {
     console.error("EMAIL ERROR:", error);
 
-    // ❌ Cleanup if email fails
     user.ResetPasswordToken = undefined;
     user.ResetPasswordExpire = undefined;
     await user.save({ validateBeforeSave: false });
@@ -102,7 +96,6 @@ const resetPassword = AsyncHandler(async (req, res) => {
     throw new ApiError(400, "Passwords do not match");
   }
 
-  // 🔐 Hash token
   const hashedToken = crypto
     .createHash("sha256")
     .update(token)
@@ -117,10 +110,7 @@ const resetPassword = AsyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid or expired reset token");
   }
 
-  // 🔑 Update password
   user.Password = newPassword;
-
-  // 🧹 Clear reset fields
   user.ResetPasswordToken = undefined;
   user.ResetPasswordExpire = undefined;
 
