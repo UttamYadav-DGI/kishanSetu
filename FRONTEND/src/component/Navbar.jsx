@@ -9,6 +9,7 @@ const Navbar = ({ setChatLang }) => {
   const location = useLocation();
   const { t, i18n } = useTranslation();
 
+  
   const [isMenuOpen, setIsMenuOpen] = useState(false); // Mobile menu toggle
   const [isLangOpen, setIsLangOpen] = useState(false); // Desktop lang dropdown toggle
   const [showRoleModal, setShowRoleModal] = useState(false);
