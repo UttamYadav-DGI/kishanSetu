@@ -35,6 +35,9 @@ import adminRoutes from "./Routers/admin.routes.js";
 import orderRoutes from "./Routers/order.routes.js";
 import transactionRoutes from "./Routers/transaction.routes.js";
 import paymentRoutes from "./Routers/payment.routes.js";
+import chatRoutes from "./Routers/chat.routes.js";
+
+app.use("/api/v1", chatRoutes);
 
 
 app.use("/api/v1/orders", orderRoutes);
