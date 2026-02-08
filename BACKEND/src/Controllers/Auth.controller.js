@@ -14,7 +14,6 @@ const client = SibApiV3Sdk.ApiClient.instance;
 client.authentications["api-key"].apiKey = process.env.BREVO_API_KEY;
 
 const emailApi = new SibApiV3Sdk.TransactionalEmailsApi();
-console.log(process.env.BREVO_API_KEY);
 
 /* =========================================================
    FORGOT PASSWORD
@@ -37,7 +36,6 @@ const forgotPassword = AsyncHandler(async (req, res) => {
   // 🔐 Generate reset token
   const resetToken = user.generatePasswordResetToken();
   await user.save({ validateBeforeSave: false });
-
   // 🔗 Reset URL
   const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
 

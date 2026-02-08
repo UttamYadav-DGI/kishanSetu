@@ -131,7 +131,8 @@ const getMarketplaceCrops = AsyncHandler(async (req, res) => {
 
   const { search, location, minPrice, maxPrice } = req.query;
 
-  const query = { status: "available" };
+  const query = { status: "available" };//This means every query will include this condition:
+
 
   if (search) {
     query.cropName = { $regex: search.trim(), $options: "i" };

@@ -31,7 +31,7 @@ import FarmerTransactions from "./pages/farmer/FarmerTransaction.jsx";
 
 import ForgotPassword from "./component/ForgetPassword.jsx";
 import ResetPassword from "./component/ResetPassword.jsx";
-
+import About from "./component/About.jsx";
 
 
 export default function App() {
@@ -73,6 +73,7 @@ export default function App() {
       <Route path="/contact" element={<Contact />}></Route>
       <Route path="/services" element={<Services />}></Route>
       <Route path="/register" element={<Register/>}></Route>
+      <Route path="/about" element={<About/>}></Route>
        <Route path="/chatbot" element={<ChatBot chatLang={chatLang} />}></Route>
     </Routes>
     </>
