@@ -1,8 +1,8 @@
-import OpenAI from "openai";
+import { GoogleGenAI } from "@google/genai";
 import { AsyncHandler } from "../Utils/AsyncHandler.js";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+const ai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY,
 });
 
 export const chatBot = AsyncHandler(async (req, res) => {
@@ -16,26 +16,29 @@ export const chatBot = AsyncHandler(async (req, res) => {
   }
 
   try {
-    const completion = await openai.chat.completions.create({
-      model: "gpt-5.2",
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are Lencho, an agriculture assistant helping farmers with crops, soil, irrigation, fertilizer, and selling produce.",
-        },
-        {
-          role: "user",
-          content: message,
-        },
-      ],
-    });
+    const response = await ai.models.generateContent({
+  model: "gemini-3-flash-preview",
+  contents: `
+You are Lencho, a friendly agriculture assistant for Indian farmers.
 
-    const reply = completion.choices[0].message.content;
+Rules:
+- Use very simple language
+- Keep answers short and clear
+- Use bullet points
+- Add emojis where helpful
+- Avoid long paragraphs
+- Format output cleanly
+
+Respond in ${language || "English"}.
+
+User question: ${message}
+`,
+});
+
 
     res.json({
       success: true,
-      data: reply,
+      data: response.text,
     });
   } catch (error) {
     console.error("AI ERROR:", error.message);
