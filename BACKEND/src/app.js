@@ -36,6 +36,8 @@ import orderRoutes from "./Routers/order.routes.js";
 import transactionRoutes from "./Routers/transaction.routes.js";
 import paymentRoutes from "./Routers/payment.routes.js";
 import chatRoutes from "./Routers/chat.routes.js";
+import schemeRoutes from "./Routers/scheme.routes.js";
+
 
 app.use("/api/v1", chatRoutes);
 
@@ -52,6 +54,8 @@ app.use("/api/v1/buyers",BuyerRouter);
 app.use("/api/v1/order",OrderRouter)
 app.use("/api/v1/auth",authRouter);
 app.use("/api/v1/admin", adminRoutes);
+
+app.use("/api/v1/schemes", schemeRoutes);
 
 
 //global error middleware that are help to send clear and concise error message to frontend

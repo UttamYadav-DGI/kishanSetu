@@ -23,7 +23,7 @@ const CropCardBuyer = ({ crop }) => {
           <p className="text-sm">Name: {farmer?.Name}</p>
           <p className="text-sm">Phone: {farmer?.PhoneNo}</p>
           <p className="text-sm">Email: {farmer?.EmailId}</p>
-          {/* <p className="text-sm">Address: {farmer.Address}</p> */}
+          {/* <p className="text-shadow-lime-500">Verify: {farmer?.verified}</p> */}
         </div>
       )}
 
