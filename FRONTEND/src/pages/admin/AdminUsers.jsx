@@ -44,10 +44,11 @@ const AdminUsers = () => {
           <p className="text-center mt-10">Loading users...</p>
         ) : (
           <div className="bg-white shadow rounded-xl p-4 space-y-3">
-            {users.length === 0 ? (
+            {users.length === 0  ? (
               <p className="text-gray-500">No users found</p>
             ) : (
-              users.map((u) => (
+              users.filter((u)=>u.Role!=="admin")
+              .map((u) => (
                 <div
                   key={u._id}
                   className="border p-4 rounded-lg flex flex-col md:flex-row md:items-center md:justify-between gap-3"
