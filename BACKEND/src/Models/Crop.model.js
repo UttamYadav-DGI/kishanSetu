@@ -49,7 +49,12 @@ const CropSchema = new mongoose.Schema(
     type: String,
     enum: ["available", "sold", "reserved"],
     default: "available"
-  }
+  },
+
+   image: {
+      type: String,
+      default: "",
+    },
 },
   {
     timestamps: true, // creates createdAt & updatedAt

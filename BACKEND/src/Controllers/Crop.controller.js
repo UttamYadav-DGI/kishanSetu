@@ -3,6 +3,7 @@ import { ApiError } from "../Utils/ApiError.js";
 import { set } from "mongoose";
 import { ApiResponse } from "../Utils/ApiResponse.js";
 import { Crop } from "../Models/Crop.model.js";
+import { getCropImage } from "../Utils/cropImages.js";
 
 const AddCrop=AsyncHandler(async(req ,res )=>{
     const farmerId=req?.user._id;
@@ -13,16 +14,18 @@ const AddCrop=AsyncHandler(async(req ,res )=>{
         throw new ApiError(403,"field are empty");
     }
 
-    const crops=await Crop.create( // we create a crop 
-        {   
-                farmerId,
-                cropName,
-                quantity,
-                pricePerKg,
-                location,
-                availableFrom
-        }
-    )
+const image = getCropImage(cropName);
+
+
+    const crops = await Crop.create({
+    farmerId,
+    cropName,
+    quantity,
+    pricePerKg,
+    location,
+    availableFrom,
+    image
+    });
 
     return res.status(200).json(new ApiResponse(200,crops,"crop add successfully"));
 
