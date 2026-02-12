@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import api from "../../Services/Api";
+
 const AddCrop = () => {
   const navigate = useNavigate();
 
@@ -17,7 +17,21 @@ const AddCrop = () => {
   const [message, setMessage] = useState("");
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    let value = e.target.value;
+
+    // Prevent multiple crop names using commas
+    if (e.target.name === "cropName") {
+      value = value.replace(/,/g, "");
+    }
+
+    // Prevent only numbers in location
+    if (e.target.name === "location") {
+      if (/^\d+$/.test(value)) {
+        return;
+      }
+    }
+
+    setFormData({ ...formData, [e.target.name]: value });
   };
 
   const handleSubmit = async (e) => {
@@ -25,14 +39,29 @@ const AddCrop = () => {
     setLoading(true);
     setMessage("");
 
+    const cropName = formData.cropName.trim();
+
+    // Only one word crop name
+    if (cropName.split(" ").length > 1) {
+      setMessage("❌ Please enter only one crop name");
+      setLoading(false);
+      return;
+    }
+
+    // Location validation
+    if (/^\d+$/.test(formData.location)) {
+      setMessage("❌ Location cannot be only numbers");
+      setLoading(false);
+      return;
+    }
+
     try {
-      await api.post(
-        "/api/v1/crops/crops",
-        formData,
-        { withCredentials: true }
-      );
+      await api.post("/api/v1/crops/crops", formData, {
+        withCredentials: true,
+      });
 
       setMessage("✅ Crop added successfully");
+
       setTimeout(() => {
         navigate("/farmers/dashboard");
       }, 1000);
@@ -57,7 +86,7 @@ const AddCrop = () => {
             name="cropName"
             value={formData.cropName}
             onChange={handleChange}
-            placeholder="Wheat, Rice, Potato"
+            placeholder="Wheat"
             className="w-full border rounded px-3 py-2"
             required
           />
@@ -69,9 +98,8 @@ const AddCrop = () => {
             type="number"
             name="quantity"
             value={formData.quantity}
-            placeholder="minimum quantity is 1kg"
             min="1"
-            step="1" //min="1" → browser won’t allow values less than 1 using arrows step="1" → prevents decimals
+            step="1"
             onChange={handleChange}
             className="w-full border rounded px-3 py-2"
             required
@@ -84,10 +112,9 @@ const AddCrop = () => {
             type="number"
             name="pricePerKg"
             value={formData.pricePerKg}
-            onChange={handleChange}
-            placeholder="minimum price (₹)10 per Kg"
             min="10"
             step="1"
+            onChange={handleChange}
             className="w-full border rounded px-3 py-2"
             required
           />
@@ -102,19 +129,19 @@ const AddCrop = () => {
             onChange={handleChange}
             placeholder="District / State"
             className="w-full border rounded px-3 py-2"
+            required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium">
-            Available From
-          </label>
+          <label className="block text-sm font-medium">Available From</label>
           <input
             type="date"
             name="availableFrom"
             value={formData.availableFrom}
             onChange={handleChange}
             className="w-full border rounded px-3 py-2"
+            required
           />
         </div>
 
@@ -126,9 +153,7 @@ const AddCrop = () => {
           {loading ? "Adding..." : "Add Crop"}
         </button>
 
-        {message && (
-          <p className="text-sm mt-2">{message}</p>
-        )}
+        {message && <p className="text-sm mt-2">{message}</p>}
       </form>
     </div>
   );
