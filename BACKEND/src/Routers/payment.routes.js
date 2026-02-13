@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { verifyJWT } from "../MiddleWare/Auth.middleWare.js";
+import { verifyJWT } from "../MiddleWare/Auth.middleware.js";
 import { createPaymentOrder, verifyPayment } from "../Controllers/payment.controller.js";
 
 const router = Router();

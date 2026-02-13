@@ -33,10 +33,10 @@ const forgotPassword = AsyncHandler(async (req, res) => {
     throw new ApiError(404, "User not found");
   }
 
-  // 🔐 Generate reset token
+  //  Generate reset token
   const resetToken = user.generatePasswordResetToken();
   await user.save({ validateBeforeSave: false });
-  // 🔗 Reset URL
+  // Reset URL
   const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
 
   const message = `
@@ -128,7 +128,7 @@ const getCurrentUser = AsyncHandler(async (req, res) => {
       200,
       {
         _id: req.user._id,
-        role: req.user.role,
+        Role: req.user.Role,
         Name: req.user.Name,
         EmailId: req.user.EmailId,
         PhoneNo: req.user.PhoneNo,

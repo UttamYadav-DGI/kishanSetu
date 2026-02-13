@@ -3,7 +3,7 @@ import { ApiError } from "../Utils/ApiError.js";
 import { ApiResponse } from "../Utils/ApiResponse.js";
 import { User } from "../Models/User.model.js";
 import { Crop } from "../Models/Crop.model.js";
-
+import { Farmer } from "../Models/Farmer.model.js";
 // Admin Dashboard Stats
 const getAdminDashboard = AsyncHandler(async (req, res) => {
   const totalUsers = await User.countDocuments();
@@ -30,13 +30,22 @@ const getAllUsers = AsyncHandler(async (req, res) => {
 });
 
 //  Get all crops
-const getAllCrops = AsyncHandler(async (req, res) => {
-  const crops = await Crop.find().sort({ createdAt: -1 });
+const getAllCrops = async (req, res) => {
+  try {
+    const crops = await Crop.find()
+      .populate("farmerId", "Name"); // fetch only Name field
 
-  return res.status(200).json(
-    new ApiResponse(200, crops, "All crops fetched successfully")
-  );
-});
+    res.status(200).json({
+      success: true,
+      data: crops,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch crops",
+    });
+  }
+};
 
 // Delete any crop (admin power)
 const deleteCropByAdmin = AsyncHandler(async (req, res) => {
@@ -85,16 +94,16 @@ const verifyFarmer = AsyncHandler(async (req, res) => {
   const { id } = req.params; // farmer profile id
   const { verified } = req.body; // true / false
 
-  const farmer = await Farmer.findById(id);
-  if (!farmer) throw new ApiError(404, "Farmer profile not found");
+  const farmers = await Farmer.findById(id);
+  if (!farmers) throw new ApiError(404, "Farmer profile not found");
 
-  farmer.verified = verified;
-  await farmer.save();
+  farmers.verified = verified;
+  await farmers.save();
 
   return res.status(200).json(
     new ApiResponse(
       200,
-      farmer,
+      farmers,
       verified ? "Farmer verified successfully" : "Farmer verification rejected"
     )
   );

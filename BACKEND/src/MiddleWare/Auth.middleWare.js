@@ -5,7 +5,7 @@ import { ApiError } from "../Utils/ApiError.js";
 
 export const verifyJWT = AsyncHandler(async (req, res, next) => {
   const token =
-    req.cookies?.accessToken || req.cookies?.AccessToken
+    req.cookies?.accessToken ||
     req.header("Authorization")?.replace("Bearer ", "");
 
   if (!token) {
@@ -28,10 +28,10 @@ export const verifyJWT = AsyncHandler(async (req, res, next) => {
   }
 
   if (user.isBlocked) {
-  throw new ApiError(403, "Your account has been blocked by admin");
-}
-
+    throw new ApiError(403, "Your account has been blocked by admin");
+  }
 
   req.user = user;
   next();
 });
+

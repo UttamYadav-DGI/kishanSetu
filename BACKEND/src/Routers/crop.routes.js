@@ -1,5 +1,5 @@
 import express from 'express'
-import { verifyJWT } from '../MiddleWare/Auth.middleWare.js'
+import { verifyJWT } from '../MiddleWare/Auth.middleware.js'
 import { AddCrop, DeleteCrop, UpdateCrop } from '../Controllers/Crop.controller.js'
 
 const router=express.Router()
