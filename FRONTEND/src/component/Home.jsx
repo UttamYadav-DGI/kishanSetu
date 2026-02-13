@@ -259,7 +259,7 @@ const Home = () => {
               <ul className="space-y-3 text-sm">
                 <li className="flex items-center"><span className="w-6 opacity-50">📧</span> help@kishansetu.in</li>
                 <li className="flex items-center"><span className="w-6 opacity-50">📞</span> 1800-KISHAN-HELP</li>
-                <li className="flex items-center"><span className="w-6 opacity-50">📍</span> Bangalore, India</li>
+                <li className="flex items-center"><span className="w-6 opacity-50">📍</span> Noida, Uttar Pradesh India</li>
               </ul>
             </div>
           </div>
