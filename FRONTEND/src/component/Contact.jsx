@@ -35,13 +35,11 @@ const Contact = () => {
             <strong>Phone:</strong> +91 9876543210
           </p>
           <p className="text-gray-600">
-            <strong>Email:</strong> <a href="mailto:support@kisansetuproject.com" className="text-green-700 underline">support@kisansetuproject.com</a>
+            <strong>Email:</strong> <a href="mailto:kishansetu.care@gmail.com" className="text-green-700 underline">kishansetu.care@gmail.com</a>
           </p>
+         
           <p className="text-gray-600">
-            <strong>Website:</strong> <a href="https://www.kisansetuproject.com" target="_blank" rel="noreferrer" className="text-green-700 underline">www.kisansetuproject.com</a>
-          </p>
-          <p className="text-gray-600">
-            <strong>Address:</strong> 123, Agri Tech Park, Delhi, India
+            <strong>Address:</strong> Noida Uttar Pradesh U.P
           </p>
           <div>
             <h3 className="text-green-700 font-semibold mb-2">References</h3>

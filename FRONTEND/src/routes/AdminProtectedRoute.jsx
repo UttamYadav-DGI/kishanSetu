@@ -1,19 +1,16 @@
-import React from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../context/Authcontext";
 
-const AdminProtectedRoute = ({ children }) => {
+const AdminProtectedRoute = () => {
   const { isLoggedIn, user, loading } = useAuth();
 
-  if (loading) return <p className="text-center mt-10">Loading...</p>;
+  if (loading) return null;
 
   if (!isLoggedIn) return <Navigate to="/login" />;
 
-  const role = user?.Role || user?.role;
+  if (user?.Role !== "admin") return <Navigate to="/" />;
 
-  if (role !== "admin") return <Navigate to="/" />;
-
-  return children;
+  return <Outlet />;
 };
 
 export default AdminProtectedRoute;
