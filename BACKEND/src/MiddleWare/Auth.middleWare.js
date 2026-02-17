@@ -5,8 +5,7 @@ import { ApiError } from "../Utils/ApiError.js";
 
 export const verifyJWT = AsyncHandler(async (req, res, next) => {
   const token =
-    req.cookies?.accessToken ||
-    req.header("Authorization")?.replace("Bearer ", "");
+    req.cookies?.accessToken || req.cookies?.AccessToken || req.header("Authorization")?.replace("Bearer ", "");
 
   if (!token) {
     throw new ApiError(401, "Unauthorized request: token missing");
