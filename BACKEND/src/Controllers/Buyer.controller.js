@@ -14,35 +14,65 @@ const setBuyerProfile = AsyncHandler(async (req, res) => {
 
   if (!userId) throw new ApiError(401, "Unauthorized access");
 
-  const user = await User.findById(userId);
-  if (!user) throw new ApiError(404, "User not found");
+  const user = req.user;
 
   if (user.Role !== "buyer") {
-    throw new ApiError(403, "Only buyer can create buyer profile");
+    throw new ApiError(403, "Only buyer can update buyer profile");
   }
 
-  const { Address } = req.body;
+  const { Name, PhoneNo, City, State, Pincode, preferredCrops } = req.body;
 
-  if (!Address || Address.trim().length < 3) {
-    throw new ApiError(400, "Address is required (min 3 characters)");
+  // -----------------------------
+  // ✅ Update User Fields
+  // -----------------------------
+  const userUpdateFields = {};
+
+  if (Name && Name.trim().length >= 2) {
+    userUpdateFields.Name = Name.trim();
   }
 
+  if (PhoneNo) {
+  const existingUser = await User.findOne({ PhoneNo });
+
+  if (existingUser && existingUser._id.toString() !== userId.toString()) {
+    throw new ApiError(400, "Phone number already in use");
+  }
+
+  userUpdateFields.PhoneNo = PhoneNo;
+}
+
+  if (Object.keys(userUpdateFields).length > 0) {
+    await User.findByIdAndUpdate(userId, {
+      $set: userUpdateFields,
+    });
+  }
+
+  // -----------------------------
+  // ✅ Update / Create Buyer Profile
+  // -----------------------------
   const buyerProfile = await Buyer.findOneAndUpdate(
     { userId },
     {
       $set: {
-        Address: Address.trim()
+        City,
+        State,
+        Pincode,
+        preferredCrops: preferredCrops || [],
       },
       $setOnInsert: {
-        userId
-      }
+        userId,
+      },
     },
     { new: true, upsert: true, runValidators: true }
-  );
+  ).populate("userId", "Name PhoneNo EmailId Role Avatar");
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, buyerProfile, "Buyer profile saved successfully"));
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      buyerProfile,
+      "Buyer profile updated successfully ✅"
+    )
+  );
 });
 
 /**
@@ -77,32 +107,26 @@ const getBuyerDashboard = AsyncHandler(async (req, res) => {
 
   if (!userId) throw new ApiError(401, "Unauthorized access");
 
+    const BuyerProfile = await Buyer.findOne({ userId });
+  
   const user = await User.findById(userId).select("Name Role");
   if (!user || user.Role !== "buyer") {
     throw new ApiError(403, "Buyer access only");
   }
 
   // ✅ total available crops
-  const totalAvailableCrops = await Crop.countDocuments({
-    status: "available",
-  });
-
-  // ✅ total orders by buyer
-  const totalOrders = await Order.countDocuments({
-    buyerId: userId,
-  });
-
-  // ✅ pending orders
-  const pendingOrders = await Order.countDocuments({
-    buyerId: userId,
-    status: "pending",
-  });
+  const [totalAvailableCrops, totalOrders, pendingOrders] = await Promise.all([ //optimize db call using promiseAll
+  Crop.countDocuments({ status: "available" }),
+  Order.countDocuments({ buyerId: userId }),
+  Order.countDocuments({ buyerId: userId, status: "pending" }),
+]);
 
   return res.status(200).json(
     new ApiResponse(
       200,
       {
         user,
+        BuyerProfile,
         totalAvailableCrops,
         totalOrders,
         pendingOrders,
@@ -164,8 +188,12 @@ const getMarketplaceCrops = AsyncHandler(async (req, res) => {
  */
 const getCropDetailsForBuyer = AsyncHandler(async (req, res) => {
   const { id } = req.params;
-
   if (!id) throw new ApiError(400, "Crop id is required");
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new ApiError(400, "Invalid crop ID");
+  }
+
 
   const crop = await Crop.findById(id).populate(
     "farmerId",

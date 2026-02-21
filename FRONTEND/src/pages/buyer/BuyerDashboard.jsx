@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
   ShoppingBag, 
@@ -7,7 +7,7 @@ import {
   ArrowRight, 
   Loader2,
   TrendingUp,
-  LogOut // Imported LogOut icon
+  LogOut 
 } from "lucide-react";
 import api from "../../Services/Api.js";
 import { useAuth } from "../../context/Authcontext";
@@ -28,6 +28,18 @@ const BuyerDashboard = () => {
     fetchDashboard();
   }, []);
 
+  /* ---------------------------------------------------------
+     ✅ LOGIC 1: Automatic Redirect for First-Time Users
+     If dashboard loads but 'buyerProfile' is missing, send to setup page.
+     --------------------------------------------------------- */
+  useEffect(() => {
+    if (dashboard && !dashboard.BuyerProfile) {
+      // Redirect to BUYER profile (not farmer)
+      navigate("/buyers/profile");
+    }
+  }, [dashboard, navigate]);
+  /* --------------------------------------------------------- */
+
   const fetchDashboard = async () => {
     try {
       const res = await getBuyerDashboard();
@@ -39,18 +51,18 @@ const BuyerDashboard = () => {
     }
   };
 
-const handleLogout = async () => {
-  try {
-    await api.post("/api/v1/users/logout",{},{ withCredentials: true });
+  const handleLogout = async () => {
+    try {
+      await api.post("/api/v1/users/logout",{},{ withCredentials: true });
 
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    logoutUser();
-    navigate("/login");
-  } catch (error) {
-    console.error("Logout failed", error);
-  }
-};
+      // localStorage.removeItem("token");
+      // localStorage.removeItem("user");
+      logoutUser();
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
+  };
 
   if (loading) {
     return (
@@ -151,7 +163,10 @@ const handleLogout = async () => {
 
           {/* Card 3: Profile */}
           <div 
-            onClick={() => navigate("/buyers/profile")}
+            onClick={() => 
+              // ✅ LOGIC 2: Manual Edit Click - Pass 'edit' mode to prevent redirect loop
+              navigate("/buyers/profile", { state: { mode: "edit" } })
+            }
             className="group bg-white p-6 rounded-2xl shadow-sm hover:shadow-md border border-transparent hover:border-purple-200 cursor-pointer transition-all duration-300"
           >
             <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-purple-600 transition-colors">

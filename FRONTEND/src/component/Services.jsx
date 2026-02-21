@@ -146,11 +146,10 @@ const Services = () => {
                     <a
                       href={scheme.link}
                       target="_blank"
-                      rel="noreferrer"
-                      className={`block w-full text-center py-2.5 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 ${
+                      rel="noreferrer"className={`block w-full text-center py-2.5 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 ${
                         expired 
-                        ? "bg-gray-200 text-gray-500 cursor-not-allowed" 
-                        : "bg-green-600 text-white hover:bg-green-700 shadow-md hover:shadow-lg"
+                          ? "bg-gray-200 text-gray-500 cursor-not-allowed" 
+                          : "bg-green-600 text-white hover:bg-green-700 shadow-md hover:shadow-lg"
                       }`}
                       onClick={(e) => expired && e.preventDefault()}
                     >
