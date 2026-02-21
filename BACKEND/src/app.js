@@ -14,12 +14,14 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin:[ process.env.CORS_ORIGIN,
-      process.env.CORS_LOCAL_ORIGIN,
+    origin: [
+      "https://kishan-setu-8yif.vercel.app",
+      "http://localhost:5173"
     ],
     credentials: true
   })
 );
+
 
 
 
@@ -52,6 +54,7 @@ app.use("/api/v1/farmers", farmerRouter);
 app.use("/api/v1/crops", cropRouter);
 app.use("/api/v1/buyers",BuyerRouter);
 app.use("/api/v1/order",OrderRouter)
+
 app.use("/api/v1/auth",authRouter);
 app.use("/api/v1/admin", adminRoutes);
 

@@ -1,44 +1,42 @@
-import React, { useEffect, useState,useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { 
-  LayoutDashboard, 
-  Plus, 
-  Sprout, 
-  IndianRupee, 
-  Package, 
-  Filter, 
-  ShoppingBag, 
+import {
+  LayoutDashboard,
+  Plus,
+  Sprout,
+  IndianRupee,
+  Package,
+  Filter,
+  ShoppingBag,
   Loader2,
   TrendingUp,
   AlertCircle
 } from "lucide-react";
 import { useAuth } from "../../context/Authcontext";
-import CropCard from "../../component/CropCard"; // Keeping your existing component
+import CropCard from "../../component/CropCard"; 
 import api from "../../Services/Api";
 
 const FarmerDashboard = () => {
-
   const { logoutUser } = useAuth();
   const navigate = useNavigate();
 
-const [profileOpen, setProfileOpen] = useState(false);
-const dropdownRef = useRef(null);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
-  
   const [dashboard, setDashboard] = useState(null);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
 
   useEffect(() => {
-  const handleClickOutside = (event) => {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-      setProfileOpen(false);
-    }
-  };
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setProfileOpen(false);
+      }
+    };
 
-  document.addEventListener("mousedown", handleClickOutside);
-  return () => document.removeEventListener("mousedown", handleClickOutside);
-}, []);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
     fetchDashboard();
@@ -47,13 +45,16 @@ const dropdownRef = useRef(null);
   // Redirect if farmer profile not completed
   useEffect(() => {
     if (dashboard && !dashboard.farmerProfile) {
+      // No state passed here, so FarmerProfile treats it as 'onboarding'
       navigate("/farmers/profile");
     }
   }, [dashboard, navigate]);
 
   const fetchDashboard = async () => {
     try {
-      const res = await api.get("/api/v1/farmers/dashboard", { withCredentials: true });
+      const res = await api.get("/api/v1/farmers/dashboard", {
+        withCredentials: true,
+      });
       setDashboard(res.data.data);
     } catch (error) {
       console.error("Error fetching dashboard:", error);
@@ -63,18 +64,17 @@ const dropdownRef = useRef(null);
   };
 
   const handleLogout = async () => {
-  try {
-    await api.post("/api/v1/users/logout",{},{ withCredentials: true });
+    try {
+      await api.post("/api/v1/users/logout", {}, { withCredentials: true });
 
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    logoutUser();
-    navigate("/login");
-  } catch (error) {
-    console.error("Logout failed", error);
-  }
-};
-
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      logoutUser();
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
+  };
 
   if (loading) {
     return (
@@ -85,14 +85,15 @@ const dropdownRef = useRef(null);
     );
   }
 
-  if (!dashboard) return <div className="text-center mt-10">Failed to load data.</div>;
+  if (!dashboard)
+    return <div className="text-center mt-10">Failed to load data.</div>;
 
   const { user, crops, totalCrops, activeCrops, earnings } = dashboard;
 
   // Filter Logic
   const filteredCrops =
     filter === "all"
-      ? crops.filter((crop) => crop.status !== "sold") // Usually 'all' in dashboard means available + active, hiding history? Adjust as needed.
+      ? crops.filter((crop) => crop.status !== "sold")
       : crops.filter((crop) => crop.status === filter);
 
   // Reusable Stat Card Component (Internal)
@@ -101,14 +102,27 @@ const dropdownRef = useRef(null);
       <div>
         <p className="text-gray-500 text-sm font-medium mb-1">{title}</p>
         <h3 className="text-2xl font-bold text-gray-800">{value}</h3>
-        {subText && <p className={`text-xs mt-2 ${color === "green" ? "text-green-600" : "text-gray-400"}`}>{subText}</p>}
+        {subText && (
+          <p
+            className={`text-xs mt-2 ${
+              color === "green" ? "text-green-600" : "text-gray-400"
+            }`}
+          >
+            {subText}
+          </p>
+        )}
       </div>
-      <div className={`p-3 rounded-lg ${
-        color === "green" ? "bg-green-100 text-green-600" :
-        color === "blue" ? "bg-blue-100 text-blue-600" :
-        color === "yellow" ? "bg-yellow-100 text-yellow-600" :
-        "bg-purple-100 text-purple-600"
-      }`}>
+      <div
+        className={`p-3 rounded-lg ${
+          color === "green"
+            ? "bg-green-100 text-green-600"
+            : color === "blue"
+            ? "bg-blue-100 text-blue-600"
+            : color === "yellow"
+            ? "bg-yellow-100 text-yellow-600"
+            : "bg-purple-100 text-purple-600"
+        }`}
+      >
         <Icon size={24} />
       </div>
     </div>
@@ -116,51 +130,53 @@ const dropdownRef = useRef(null);
 
   return (
     <div className="min-h-screen bg-gray-50 pb-12">
-      
       {/* 🔝 Header Section */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            
             {/* User Intro */}
             <div className="flex items-center gap-4">
               <div className="relative" ref={dropdownRef}>
-  <div
-    onClick={() => setProfileOpen(!profileOpen)}
-    className="w-12 h-12 bg-green-600 text-white flex items-center justify-center rounded-full cursor-pointer font-bold text-lg"
-  >
-    FU
-  </div>
+                <div
+                  onClick={() => setProfileOpen(!profileOpen)}
+                  className="w-12 h-12 bg-green-600 text-white flex items-center justify-center rounded-full cursor-pointer font-bold text-lg"
+                >
+                  FU
+                </div>
 
-  {profileOpen && (
-    <div className="absolute left-0 mt-2 w-48 bg-white shadow-lg rounded-xl border">
-      <button
-        onClick={() => navigate("/farmers/profile")}
-        className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-      >
-        Edit Profile
-      </button>
+                {profileOpen && (
+                  <div className="absolute left-0 mt-2 w-48 bg-white shadow-lg rounded-xl border">
+                    {/* 👇👇👇 THE FIX IS HERE 👇👇👇 */}
+                    <button
+                      onClick={() =>
+                        // We pass 'state' so FarmerProfile knows we are editing, not onboarding
+                        navigate("/farmers/profile", { state: { mode: "edit" } })
+                      }
+                      className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                    >
+                      Edit Profile
+                    </button>
 
-      <button
-        onClick={() => navigate("/farmers/dashboard")}
-        className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-      >
-        Dashboard
-      </button>
+                    <button
+                      onClick={() => navigate("/farmers/dashboard")}
+                      className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                    >
+                      Dashboard
+                    </button>
 
-      <button
-        onClick={handleLogout}
-        className="block w-full text-left px-4 py-2 text-red-500 hover:bg-red-50"
-      >
-        Logout
-      </button>
-    </div>
-  )}
-</div>
+                    <button
+                      onClick={handleLogout}
+                      className="block w-full text-left px-4 py-2 text-red-500 hover:bg-red-50"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
 
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">
-                  Welcome back, {user.Name?.split(' ')[0]}! 👋
+                  Welcome back, {user.Name?.split(" ")[0]}! 👋
                 </h1>
                 <p className="text-gray-500 text-sm flex items-center mt-1">
                   <LayoutDashboard className="w-3 h-3 mr-1" /> Farmer Dashboard
@@ -190,35 +206,34 @@ const dropdownRef = useRef(null);
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
-        
         {/* 📊 Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-          <StatCard 
-            title="Total Listings" 
-            value={totalCrops} 
-            icon={Sprout} 
-            color="green" 
+          <StatCard
+            title="Total Listings"
+            value={totalCrops}
+            icon={Sprout}
+            color="green"
             subText="Lifetime crops added"
           />
-          <StatCard 
-            title="Active Crops" 
-            value={activeCrops} 
-            icon={Package} 
-            color="blue" 
+          <StatCard
+            title="Active Crops"
+            value={activeCrops}
+            icon={Package}
+            color="blue"
             subText="Currently in marketplace"
           />
-          <StatCard 
-            title="Crops Sold" 
-            value={totalCrops - activeCrops} 
-            icon={TrendingUp} 
-            color="purple" 
+          <StatCard
+            title="Crops Sold"
+            value={totalCrops - activeCrops}
+            icon={TrendingUp}
+            color="purple"
             subText="Completed sales"
           />
-          <StatCard 
-            title="Total Earnings" 
-            value={`₹ ${earnings?.toLocaleString() || 0}`} 
-            icon={IndianRupee} 
-            color="yellow" 
+          <StatCard
+            title="Total Earnings"
+            value={`₹ ${earnings?.toLocaleString() || 0}`}
+            icon={IndianRupee}
+            color="yellow"
             subText="Revenue generated"
           />
         </div>
@@ -235,7 +250,7 @@ const dropdownRef = useRef(null);
             {[
               { id: "all", label: "All Active" },
               { id: "available", label: "Available" },
-              { id: "sold", label: "Sold Out" }
+              { id: "sold", label: "Sold Out" },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -258,10 +273,14 @@ const dropdownRef = useRef(null);
             <div className="bg-gray-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
               <AlertCircle className="text-gray-400 w-8 h-8" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900">No crops found</h3>
-            <p className="text-gray-500 mt-1">You don't have any crops in this category yet.</p>
+            <h3 className="text-lg font-medium text-gray-900">
+              No crops found
+            </h3>
+            <p className="text-gray-500 mt-1">
+              You don't have any crops in this category yet.
+            </p>
             {filter === "all" && (
-              <button 
+              <button
                 onClick={() => navigate("/farmers/add-crop")}
                 className="mt-4 text-green-600 font-medium hover:underline"
               >
@@ -275,7 +294,6 @@ const dropdownRef = useRef(null);
               <CropCard
                 key={crop._id}
                 crop={crop}
-                // ✅ FIX: Fixed the URL interpolation logic here
                 onEdit={() => navigate(`/farmers/edit-crop/${crop._id}`)}
                 onRefresh={fetchDashboard}
               />

@@ -10,7 +10,7 @@ import {
   LogOut // Imported LogOut icon
 } from "lucide-react";
 import api from "../../Services/Api.js";
-import { useAuth } from "../../context/Authcontext.jsx";
+import { useAuth } from "../../context/Authcontext";
 // Components
 import BuyerHeader from "../../component/buyer/BuyerHeader";
 import BuyerStats from "../../component/buyer/BuyerStats";
