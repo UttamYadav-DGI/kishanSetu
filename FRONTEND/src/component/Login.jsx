@@ -49,8 +49,8 @@ export default function Login() {
       const response = await api.post("/api/v1/users/login", formData, {
         withCredentials: true,
       });
-
       const user = response.data?.data?.user;
+      const accessToken=response.data?.data?.accessToken;
       const userRole = user?.Role || user?.role;
 
       // ✅ Validation: Role Match
@@ -62,7 +62,9 @@ export default function Login() {
       }
 
       setSuccess("Login successful! Welcome back.");
-      loginUser(user);
+      loginUser(user,accessToken);
+            // localStorage.setItem("accessToken", response.data.data.accessToken);
+
 
       setTimeout(() => {
         redirectByRole(userRole);

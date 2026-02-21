@@ -33,4 +33,29 @@ export const verifyJWT = AsyncHandler(async (req, res, next) => {
   req.user = user;
   next();
 });
+// refreshToken mechanism
+export const refreshAccessToken = AsyncHandler(async (req, res) => {
+    const incomingRefreshToken = req.cookies.refreshToken;
+
+    if (!incomingRefreshToken) {
+        throw new ApiError(401, "Refresh token missing");
+    }
+
+    const decoded = jwt.verify(
+        incomingRefreshToken,
+        process.env.REFRESH_TOKEN_SECRET
+    );
+
+    const user = await User.findById(decoded._id);
+
+    if (!user || user.RefreshToken !== incomingRefreshToken) {
+        throw new ApiError(401, "Invalid refresh token");
+    }
+
+    const newAccessToken = user.generateAccessToken();
+
+    return res.status(200).json(
+        new ApiResponse(200, { accessToken: newAccessToken })
+    );
+});
 
