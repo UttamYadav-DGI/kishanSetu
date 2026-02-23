@@ -14,6 +14,20 @@ const Navbar = ({ setChatLang }) => {
   const [showRoleModal, setShowRoleModal] = useState(false);
   const [role, setRole] = useState("");
 
+  // ------------------------------------------------------------------
+  // ⚡️ PERFORMANCE OPTIMIZATION
+  // ------------------------------------------------------------------
+  // 1. Check if JavaScript can see any auth cookies (non-HttpOnly)
+  const hasCookie = document.cookie.includes("refreshToken") || document.cookie.includes("accessToken");
+  
+  // 2. Check if there is a token in LocalStorage (fallback)
+  const hasLocalToken = localStorage.getItem("token") || localStorage.getItem("user");
+
+  // 3. Logic: Only show the "Loading Skeleton" if we suspect data exists.
+  //    If NO data exists locally, we force the Login button to show INSTANTLY.
+  const shouldWait = (hasCookie || hasLocalToken) && loading;
+  // ------------------------------------------------------------------
+
   const userRole = (user?.Role || user?.role || "").toLowerCase();
 
   const languages = [
@@ -32,14 +46,10 @@ const Navbar = ({ setChatLang }) => {
     i18n.changeLanguage(langCode);
     setChatLang(langCode);
     setIsLangOpen(false);
-    setIsMenuOpen(false);
   };
 
   const getCurrentLanguageDisplay = () => {
-    return (
-      languages.find((lang) => lang.code === i18n.language)?.display ||
-      "Language"
-    );
+    return languages.find((lang) => lang.code === i18n.language)?.display || "Language";
   };
 
   const handleContinue = () => {
@@ -50,13 +60,11 @@ const Navbar = ({ setChatLang }) => {
 
   const goToDashboard = () => {
     if (!userRole) return;
-
     const routes = {
       farmer: "/farmers/dashboard",
       buyer: "/buyers/dashboard",
       admin: "/admin/dashboard",
     };
-
     navigate(routes[userRole] || "/");
   };
 
@@ -69,15 +77,16 @@ const Navbar = ({ setChatLang }) => {
   ];
 
   return (
-    <nav className="bg-white shadow-md w-full sticky top-0 z-50">
-      <div className="container mx-auto px-4 flex justify-between items-center h-16">
+    <nav className="bg-white shadow-md w-full sticky top-0 z-50 h-16">
+      <div className="container mx-auto px-4 flex justify-between items-center h-full">
 
         {/* Logo */}
         <div
-          className="text-2xl font-bold text-green-700 cursor-pointer flex items-center"
+          className="text-2xl font-bold text-green-700 cursor-pointer flex items-center gap-2"
           onClick={() => navigate("/")}
         >
-          🌱 {t("navbar.logo")}
+          <span>🌱</span>
+          <span>{t("navbar.logo")}</span>
         </div>
 
         {/* Desktop Menu */}
@@ -86,7 +95,7 @@ const Navbar = ({ setChatLang }) => {
             <Link
               key={link.path}
               to={link.path}
-              className={`transition-colors ${
+              className={`text-sm font-medium transition-colors ${
                 location.pathname === link.path
                   ? "text-green-700 font-bold"
                   : "text-gray-600 hover:text-green-600"
@@ -96,25 +105,22 @@ const Navbar = ({ setChatLang }) => {
             </Link>
           ))}
 
-          {/* Language Dropdown */}
+          {/* Language Selector */}
           <div className="relative">
             <button
               onClick={() => setIsLangOpen(!isLangOpen)}
-              className="flex items-center space-x-1 bg-gray-100 px-3 py-2 rounded-md hover:bg-gray-200 transition"
+              className="flex items-center gap-1 bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-md hover:bg-gray-100 transition text-sm text-gray-700"
             >
-              <span>{getCurrentLanguageDisplay()}</span>
+              🌐 <span>{getCurrentLanguageDisplay()}</span>
             </button>
-
             {isLangOpen && (
-              <div className="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-xl py-2">
+              <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-100 rounded-lg shadow-xl py-1 z-50">
                 {languages.map((lang) => (
                   <button
                     key={lang.code}
                     onClick={() => handleLanguageChange(lang.code)}
-                    className={`block w-full text-left px-4 py-2 hover:bg-green-50 ${
-                      i18n.language === lang.code
-                        ? "text-green-600 font-bold"
-                        : "text-gray-700"
+                    className={`block w-full text-left px-4 py-2 text-sm hover:bg-green-50 ${
+                      i18n.language === lang.code ? "text-green-600 font-bold bg-green-50/50" : "text-gray-700"
                     }`}
                   >
                     {lang.display}
@@ -124,65 +130,68 @@ const Navbar = ({ setChatLang }) => {
             )}
           </div>
 
-          {/* AUTH BUTTON */}
-        {/* AUTH BUTTON */}
-          {loading ? (
-            <div className="w-24 h-8 bg-gray-200 rounded-lg animate-pulse" />
-          ) : !isLoggedIn ? (
+          {/* ⚡️ AUTH BUTTON (OPTIMIZED) */}
+          {/* Only show Skeleton if we FOUND a cookie/token locally AND API is still loading */}
+          {shouldWait ? (
+            <div className="w-28 h-10 bg-gray-200 rounded-lg animate-pulse" />
+          ) : isLoggedIn ? (
             <button
-              onClick={() => setShowRoleModal(true)}
-              className="bg-green-600 text-white px-5 py-2 rounded-lg hover:bg-green-700 transition shadow-md"
+              onClick={goToDashboard}
+              className="bg-green-700 text-white px-5 py-2 rounded-lg hover:bg-green-800 transition shadow-md font-medium text-sm flex items-center gap-2"
             >
-              {t("navbar.loginRegister")}
+              <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+              Dashboard
             </button>
           ) : (
             <button
-              onClick={goToDashboard}
-              className="bg-green-700 text-white px-5 py-2 rounded-lg hover:bg-green-800 transition shadow-md"
+              onClick={() => setShowRoleModal(true)}
+              className="bg-green-600 text-white px-5 py-2 rounded-lg hover:bg-green-700 transition shadow-md font-medium text-sm"
             >
-              Dashboard
+              {t("navbar.loginRegister")}
             </button>
           )}
 
         </div>
+
+        {/* Mobile Hamburger */}
+        <button
+          className="md:hidden text-gray-600"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" /></svg>
+        </button>
       </div>
 
-      {/* ROLE MODAL */}
+      {/* Role Modal */}
       {showRoleModal && (
         <div
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[1000]"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999]"
           onClick={() => setShowRoleModal(false)}
         >
           <div
-            className="bg-white w-full max-w-md rounded-2xl shadow-2xl p-8"
+            className="bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 className="text-2xl font-bold mb-2">Welcome!</h2>
-            <p className="text-gray-600 mb-6">
-              Please select your role to continue.
-            </p>
-
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              className="w-full border-2 border-gray-200 p-3 rounded-xl"
-            >
-              <option value="">Select Role...</option>
-              <option value="farmer">Farmer</option>
-              <option value="buyer">Buyer</option>
-              <option value="admin">Admin</option>
-            </select>
-
-            <div className="flex gap-4 mt-8">
-              <button
-                onClick={() => setShowRoleModal(false)}
-                className="flex-1 px-4 py-3 rounded-xl border"
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold text-gray-800">Welcome! 👋</h2>
+              <button onClick={() => setShowRoleModal(false)} className="text-gray-400 hover:text-red-500">✕</button>
+            </div>
+            <p className="text-gray-600 mb-6 text-sm">Please select your role to continue.</p>
+            <div className="space-y-3">
+              <select
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                className="w-full border border-gray-300 p-3 rounded-xl focus:ring-2 focus:ring-green-500 outline-none bg-white"
               >
-                Cancel
-              </button>
+                <option value="">-- Choose Role --</option>
+                <option value="farmer">Farmer</option>
+                <option value="buyer"> Buyer</option>
+                <option value="admin"> Admin</option>
+              </select>
               <button
                 onClick={handleContinue}
-                className="flex-1 px-4 py-3 rounded-xl bg-green-600 text-white"
+                disabled={!role}
+                className="w-full py-3 rounded-xl bg-green-600 text-white font-bold hover:bg-green-700 shadow-lg shadow-green-200 transition-all mt-4 disabled:opacity-50"
               >
                 Continue
               </button>

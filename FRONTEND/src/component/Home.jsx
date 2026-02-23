@@ -1,19 +1,55 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/Authcontext"; 
 
 const Home = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { isLoggedIn, user } = useAuth();
+  
+  // State for the specific "Buyer Login" popup
+  const [showBuyerPopup, setShowBuyerPopup] = useState(false);
+
+  // Logic for "Get Started" Button (Existing)
+  const handleGetStarted = () => {
+    if (isLoggedIn && user) {
+      const role = (user.Role || user.role || "").toLowerCase();
+      if (role === "farmer") navigate("/farmers/dashboard");
+      else if (role === "buyer") navigate("/buyers/dashboard");
+      else navigate("/admin/dashboard");
+    } else {
+      navigate("/register");
+    }
+  };
+
+  // ✅ NEW LOGIC for "Explore Market"
+  const handleExploreMarket = () => {
+    const role = (user?.Role || user?.role || "").toLowerCase();
+
+    // If User is already a Buyer, let them through
+    if (isLoggedIn && role === "buyer") {
+      navigate("/buyers/marketplace");
+    } 
+    // Otherwise (Guest or Farmer), show the Login Popup
+    else {
+      setShowBuyerPopup(true);
+    }
+  };
 
   const handleNavClick = (path) => {
     navigate(path); 
   };
 
+  // Helper to redirect to login as buyer from the popup
+  const handleBuyerLoginRedirect = () => {
+    navigate("/login", { state: { role: "buyer" } });
+  };
+
   return (
     <div className="min-h-screen bg-white font-sans text-gray-800 selection:bg-green-100 selection:text-green-800">
       
-      {/* ================= HERO SECTION (Preserved) ================= */}
+      {/* ================= HERO SECTION ================= */}
       <section className="relative w-full pt-16 pb-24 lg:pt-32 lg:pb-40 overflow-hidden">
         <div className="absolute top-20 right-0 w-[500px] h-[500px] bg-green-50 rounded-full blur-3xl -z-10 opacity-60"></div>
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-50 rounded-full blur-3xl -z-10 opacity-60"></div>
@@ -36,13 +72,15 @@ const Home = () => {
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <button 
-                  onClick={() => handleNavClick("/register")}
+                  onClick={handleGetStarted}
                   className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-xl text-lg font-bold transition-all shadow-xl shadow-green-200 hover:-translate-y-1 flex items-center justify-center gap-2"
                 >
-                  Get Started 🌾
+                  {isLoggedIn ? "Go to Dashboard 🚀" : "Get Started 🌾"}
                 </button>
+                
+                {/* ✅ UPDATED EXPLORE MARKET BUTTON */}
                 <button 
-                  onClick={() => handleNavClick("/buyers/marketplace")}
+                  onClick={handleExploreMarket} 
                   className="bg-white border-2 border-gray-100 hover:border-green-600 text-gray-700 hover:text-green-700 px-8 py-4 rounded-xl text-lg font-bold transition-all hover:-translate-y-1"
                 >
                   Explore Market
@@ -58,6 +96,8 @@ const Home = () => {
                 <p>Join 15,000+ farmers today.</p>
               </div>
             </div>
+            
+            {/* Image Section */}
             <div className="relative hidden lg:block h-[600px]">
               <div className="absolute right-0 top-0 w-2/3 h-[500px] rounded-[2rem] overflow-hidden shadow-2xl border-4 border-white z-10 hover:scale-[1.02] transition-transform duration-500">
                 <img 
@@ -93,7 +133,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ================= NEW BOTTOM PART STARTS HERE ================= */}
+      {/* ================= NEW BOTTOM PART ================= */}
 
       {/* --- HOW IT WORKS (Timeline) --- */}
       <section className="py-24 bg-gray-50 relative">
@@ -104,7 +144,6 @@ const Home = () => {
           </div>
 
           <div className="relative grid md:grid-cols-3 gap-8">
-            {/* Connecting Line (Desktop Only) */}
             <div className="hidden md:block absolute top-12 left-[15%] right-[15%] h-0.5 bg-gray-300 border-t-2 border-dashed border-gray-300 z-0"></div>
 
             {[
@@ -165,9 +204,8 @@ const Home = () => {
         </div>
       </section>
 
-      {/* --- STATISTICS STRIP (Dark Mode Contrast) --- */}
+      {/* --- STATISTICS STRIP --- */}
       <section className="bg-gray-900 py-16 text-white overflow-hidden relative">
-        {/* Background Patterns */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-green-500/10 rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl"></div>
 
@@ -190,12 +228,10 @@ const Home = () => {
         </div>
       </section>
 
-      {/* --- CTA CARD (Call to Action) --- */}
+      {/* --- CTA CARD --- */}
       <section className="py-24 px-4 bg-white">
         <div className="container mx-auto max-w-5xl">
           <div className="bg-gradient-to-br from-green-600 to-emerald-800 rounded-[3rem] p-12 md:p-20 text-center text-white shadow-2xl relative overflow-hidden">
-            
-            {/* Pattern Overlay */}
             <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
             
             <div className="relative z-10">
@@ -205,10 +241,10 @@ const Home = () => {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <button 
-                  onClick={() => handleNavClick("/register")} 
+                  onClick={handleGetStarted} 
                   className="bg-white text-green-900 px-10 py-4 rounded-xl font-bold hover:bg-green-50 transition-colors shadow-lg"
                 >
-                  Join Now - It's Free
+                  {isLoggedIn ? "Go to Dashboard" : "Join Now - It's Free"}
                 </button>
                 <button 
                   onClick={() => handleNavClick("/contact")} 
@@ -222,7 +258,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* --- MODERN DARK FOOTER --- */}
+      {/* --- FOOTER --- */}
       <footer className="bg-gray-900 text-gray-400 py-16 border-t border-gray-800">
         <div className="container mx-auto px-6 lg:px-12">
           <div className="grid md:grid-cols-4 gap-12 mb-12">
@@ -239,7 +275,7 @@ const Home = () => {
             <div>
               <h4 className="text-white font-bold mb-6">Quick Links</h4>
               <ul className="space-y-3 text-sm">
-                <li><button onClick={() => handleNavClick("/buyers/marketplace")} className="hover:text-green-400 transition-colors">Marketplace</button></li>
+                <li><button onClick={handleExploreMarket} className="hover:text-green-400 transition-colors">Marketplace</button></li>
                 <li><button onClick={() => handleNavClick("/services")} className="hover:text-green-400 transition-colors">Govt Schemes</button></li>
                 <li><button onClick={() => handleNavClick("/chatbot")} className="hover:text-green-400 transition-colors">AI Assistant</button></li>
               </ul>
@@ -250,7 +286,7 @@ const Home = () => {
               <ul className="space-y-3 text-sm">
                 <li><button onClick={() => handleNavClick("/about")} className="hover:text-green-400 transition-colors">About Us</button></li>
                 <li><button onClick={() => handleNavClick("/contact")} className="hover:text-green-400 transition-colors">Contact</button></li>
-                <li><button onClick={() => handleNavClick("/register")} className="hover:text-green-400 transition-colors">Join Us</button></li>
+                <li><button onClick={handleGetStarted} className="hover:text-green-400 transition-colors">Join Us</button></li>
               </ul>
             </div>
 
@@ -273,6 +309,41 @@ const Home = () => {
           </div>
         </div>
       </footer>
+
+      {/* ================= ✅ NEW POPUP MODAL ================= */}
+      {showBuyerPopup && (
+        <div 
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999]"
+          onClick={() => setShowBuyerPopup(false)}
+        >
+          <div 
+            className="bg-white w-full max-w-sm rounded-2xl shadow-2xl p-8 text-center animate-fade-in-up"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
+              🛒
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Access Marketplace</h2>
+            <p className="text-gray-600 mb-6">
+              The marketplace is exclusively for buyers. Please log in as a <strong>Buyer</strong> to explore crops and prices.
+            </p>
+            
+            <button 
+              onClick={handleBuyerLoginRedirect}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-blue-200 mb-3"
+            >
+              Login as Buyer
+            </button>
+            
+            <button 
+              onClick={() => setShowBuyerPopup(false)}
+              className="text-gray-400 hover:text-gray-600 text-sm font-medium"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
 
     </div>
   );

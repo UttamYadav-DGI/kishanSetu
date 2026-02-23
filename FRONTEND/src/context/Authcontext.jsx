@@ -11,18 +11,14 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [accessToken, setAccessToken] = useState(null);
 
-  // ===============================
-  // ✅ LOGIN
-  // ===============================
+ //login
   const loginUser = (userData, token) => {
     setUser(userData);
     setAccessToken(token);
     setIsLoggedIn(true);
   };
 
-  // ===============================
-  // ✅ LOGOUT
-  // ===============================
+//logout
   const logoutUser = async () => {
     try {
       await api.post("/api/v1/users/logout");
@@ -35,14 +31,11 @@ export const AuthProvider = ({ children }) => {
     setIsLoggedIn(false);
   };
 
-  // ===============================
-  // ✅ REFRESH ACCESS TOKEN
-  // ===============================
+  //REFRESH ACCESS TOKEN
   const refreshAccessToken = async () => {
     try {
       const res = await api.post("/api/v1/auth/refresh-token");
       const newToken = res.data.data.accessToken;
-
       setAccessToken(newToken);
       setIsLoggedIn(true);
 
@@ -54,28 +47,28 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // ===============================
-  // ✅ FETCH USER ON APP LOAD
-  // ===============================
-  const fetchCurrentUser = async () => {
-    try {
-      const newToken = await refreshAccessToken();
+  // FETCH USER ON APP LOAD
+const fetchCurrentUser = async () => {
+  try {
+    const newToken = await refreshAccessToken();
 
-      if (!newToken) {
-        setLoading(false);
-        return;
-      }
-
-      const res = await api.get("/api/v1/auth/me");
-      setUser(res.data.data);
-      setIsLoggedIn(true);
-    } catch (err) {
-      setUser(null);
-      setIsLoggedIn(false);
-    } finally {
+    if (!newToken) {
       setLoading(false);
+      return;
     }
-  };
+
+    const res = await api.get("/api/v1/auth/me");
+
+    setUser(res.data.data);
+    setIsLoggedIn(true);
+    setLoading(true)
+  } catch (err) {
+    setUser(null);
+    setIsLoggedIn(false);
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     fetchCurrentUser();

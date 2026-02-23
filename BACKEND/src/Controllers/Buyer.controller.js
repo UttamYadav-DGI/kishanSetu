@@ -5,6 +5,7 @@ import { ApiError } from "../Utils/ApiError.js";
 import { ApiResponse } from "../Utils/ApiResponse.js";
 import { AsyncHandler } from "../Utils/AsyncHandler.js";
 import { Order } from "../Models/Order.model.js";
+import mongoose from "mongoose";
 /**
  * ✅ Create/Update Buyer Profile
  * Only Role === "buyer" can access
