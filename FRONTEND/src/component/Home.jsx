@@ -93,7 +93,7 @@ const Home = () => {
                   <img className="w-12 h-12 rounded-full border-4 border-white object-cover" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop" alt="User" />
                   <div className="w-12 h-12 rounded-full border-4 border-white bg-green-100 text-green-700 flex items-center justify-center text-xs">+2k</div>
                 </div>
-                <p>Join 15,000+ farmers today.</p>
+                <p>Join 1+ farmers today.</p>
               </div>
             </div>
             
@@ -212,9 +212,9 @@ const Home = () => {
         <div className="container mx-auto px-6 relative z-10">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center divide-x divide-gray-800">
             {[
-              { label: "Active Farmers", val: "50k+" },
-              { label: "Transactions", val: "₹10Cr+" },
-              { label: "Govt Schemes", val: "200+" },
+              { label: "Active Farmers", val: "50+" },
+              { label: "Transactions", val: "₹10000+" },
+              { label: "Govt Schemes", val: "30+" },
               { label: "Support", val: "24/7" }
             ].map((stat, i) => (
               <div key={i} className="px-4">
