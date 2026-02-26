@@ -1,5 +1,7 @@
 import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Toaster, toast } from "react-hot-toast";
+
 import { 
   LayoutDashboard, 
   Users, 
@@ -9,11 +11,13 @@ import {
   LogOut, 
   Leaf 
 } from "lucide-react";
-
+import { useAuth } from "../../context/Authcontext";
+import api from "../../Services/Api";
 // You might want to import your logout API service here
 // import { logoutUser } from "../../Services/authApi"; 
 
 const AdminSidebar = () => {
+  const { logoutUser } = useAuth(); // Hook to clear context state
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -45,11 +49,26 @@ const AdminSidebar = () => {
     },
   ];
 
-  const handleLogout = () => {
-    // Clear tokens/storage here
-    localStorage.removeItem("token"); 
-    // Redirect
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      // 1. Call API to clear cookies (Server Side)
+      await api.post("/api/v1/users/logout", {}, { withCredentials: true });
+
+      // 2. Clear Local Storage (Client Side)
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+
+      // 3. Update Context
+      if(logoutUser) logoutUser();
+
+      // 4. Success Toast & Redirect
+      toast.success("Logged out successfully");
+      navigate("/login"); 
+      
+    } catch (error) {
+      console.error("Logout failed", error);
+      toast.error("Logout failed. Please try again.");
+    }
   };
 
   return (
