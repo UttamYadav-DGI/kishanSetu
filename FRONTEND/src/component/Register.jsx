@@ -15,6 +15,7 @@ export default function Register() {
     Password: "",
     Address: "",
     Role: initialRole,
+    adminSecret: "", // ✅ ADDED FIELD
     avatar: null,
   });
 
@@ -43,10 +44,15 @@ export default function Register() {
 
   // ✅ ENHANCED VALIDATION LOGIC
   const validateForm = () => {
-    const { Name, PhoneNo, EmailId, Password, Address } = formData;
+    const { Name, PhoneNo, EmailId, Password, Address, Role, adminSecret } = formData;
 
     if (!Name || !PhoneNo || !EmailId || !Password || !Address) {
       return "All fields are mandatory.";
+    }
+
+    // ✅ NEW RULE: Admin Secret Check
+    if (Role === "admin" && !adminSecret) {
+      return "Admin Secret Key is required to register as Admin.";
     }
 
     // Rule: Name must not contain numbers or special characters
@@ -88,6 +94,8 @@ export default function Register() {
       setLoading(true);
       const data = new FormData();
       Object.keys(formData).forEach((key) => {
+        // ✅ Only append adminSecret if role is admin
+        if (key === "adminSecret" && formData.Role !== "admin") return;
         data.append(key, formData[key]);
       });
 
@@ -100,6 +108,7 @@ export default function Register() {
       setTimeout(() => navigate("/login"), 2000);
 
     } catch (err) {
+      // ✅ Handle Specific Backend Message for Secret Key Mismatch
       setError(err.response?.data?.message || "Registration failed.");
     } finally {
       setLoading(false);
@@ -161,6 +170,21 @@ export default function Register() {
                 </select>
             </div>
           </div>
+
+          {/* ✅ NEW ADMIN SECRET FIELD */}
+          {formData.Role === "admin" && (
+            <div>
+              <input
+                type="password"
+                name="adminSecret"
+                placeholder="Enter Admin Secret Key"
+                value={formData.adminSecret}
+                onChange={handleChange}
+                className="w-full border-2 border-red-200 bg-red-50 text-red-700 p-3 rounded-xl focus:border-red-400 outline-none transition placeholder-red-300"
+              />
+              <p className="text-[10px] text-red-400 ml-2 mt-1">* Required for Admin Registration</p>
+            </div>
+          )}
 
           <input
             type="email"

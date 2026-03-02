@@ -27,12 +27,24 @@ const generateAccessAndRefreshToken = async (userId) => {
 
 
 const register= AsyncHandler(async(req,res,next)=>{
-    const {Name,PhoneNo,EmailId,Password,Role,Address}=req.body
+    const {Name,PhoneNo,EmailId,Password,Role,Address,adminSecret}=req.body
 
     if(!Name || !PhoneNo || !EmailId || !Password || !Address){
         throw new ApiError(400,"Field is mandatory !!");
     }
-    
+    if (Role === "admin") {
+        if(!adminSecret){
+            throw new ApiError(400,"Field is mandatory");
+        }
+    // Check if the provided secret matches your .env ADMIN_SECRET_KEY
+    if (adminSecret !== process.env.ADMIN_SECRET_KEY) {
+      //  SEND THE SPECIFIC ERROR MESSAGE HERE
+      throw new ApiError(
+        403, 
+        "You are not a verified user to become admin. Please contact on kishansetu.care@gmail.com"
+      );
+    }
+  }
     const existedUser=await User.findOne(
         {
         $or:[{PhoneNo:PhoneNo.trim()},
