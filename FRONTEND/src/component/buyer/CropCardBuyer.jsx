@@ -15,18 +15,36 @@ const CropCardBuyer = ({ crop }) => {
   const navigate = useNavigate();
   const farmer = crop?.farmerId;
 
-  // 🎨 Helper: Get image based on crop name (Placeholder logic)
+  // 🎨 Helper: Get image based on crop name
   const getCropImage = (name) => {
     const cropName = name?.toLowerCase() || "";
-    if (cropName.includes("wheat")) return "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=600&q=80";
-    if (cropName.includes("rice") || cropName.includes("paddy")) return "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=600&q=80";
-    if (cropName.includes("potato")) return "https://images.unsplash.com/photo-1518977676651-71f64657baa2?w=600&q=80";
-    if (cropName.includes("tomato")) return "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600&q=80";
-    if (cropName.includes("onion")) return "https://images.unsplash.com/photo-1618512496248-a07fe83aa82e?w=600&q=80";
-    if (cropName.includes("corn") || cropName.includes("maize")) return "https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=600&q=80";
-    if (cropName.includes("cotton")) return "https://images.unsplash.com/photo-1594301980637-772921ba0989?w=600&q=80";
-    // Default fallback
-    return "https://images.unsplash.com/photo-1492496913980-501348b61469?w=600&q=80";
+
+    // VEGETABLES
+    if (cropName.includes("potato") || cropName.includes("aloo")) 
+      return "https://growhoss.com/cdn/shop/articles/potato_ecdbb7b2-3914-4edb-818d-eb6abfc66627_460x@2x.jpg?v=1761159166";
+    
+    if (cropName.includes("onion") || cropName.includes("pyaz")) 
+      return "https://m.economictimes.com/thumb/msid-112117490,width-1600,height-900,resizemode-4,imgsize-120226/onion.jpg";
+    
+    if (cropName.includes("tomato")) 
+      return "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=600&q=80";
+
+    // GRAINS
+    if (cropName.includes("wheat") || cropName.includes("gehu")) 
+      return "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=600&q=80";
+    
+    if (cropName.includes("rice") || cropName.includes("paddy")) 
+      return "https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=80";
+
+    if (cropName.includes("corn") || cropName.includes("maize")) 
+      return "https://images.unsplash.com/photo-1551754655-cd27e38d2076?auto=format&fit=crop&w=600&q=80";
+
+    // OTHERS
+    if (cropName.includes("sugarcane"))
+      return "https://4.imimg.com/data4/QX/AP/MY-8729085/sugarcane-plant.jpg";
+
+    // 🛑 DEFAULT FALLBACK (Generic Farm)
+    return "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=600&q=80";
   };
 
   // 🏷️ Helper: Status Colors
@@ -53,6 +71,11 @@ const CropCardBuyer = ({ crop }) => {
           src={getCropImage(crop.cropName)} 
           alt={crop.cropName} 
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out"
+          // ✅ ADDED: Fallback if specific crop image fails
+          onError={(e) => {
+            e.target.onerror = null; 
+            e.target.src = "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=600&q=80";
+          }}
         />
         
         {/* Gradient Overlay for Text Readability */}
@@ -79,7 +102,7 @@ const CropCardBuyer = ({ crop }) => {
         {/* Title & Date */}
         <div className="mb-4">
             <div className="flex justify-between items-start">
-                <h3 className="text-xl font-bold text-gray-900 capitalize leading-snug group-hover:text-green-700 transition-colors">
+                <h3 className="text-xl font-bold text-gray-900 capitalize leading-snug group-hover:text-green-700 transition-colors line-clamp-1">
                 {crop.cropName}
                 </h3>
             </div>
